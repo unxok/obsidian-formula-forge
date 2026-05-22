@@ -1,0 +1,43 @@
+import { Component, MarkdownPostProcessor } from "obsidian";
+import { FormulaForge } from "~/Plugin";
+import { FormulaRenderer } from "./renderer";
+import "./index.css";
+import { createFormulaRendererCodeblockProcessor } from "./codeblock-processor";
+import { createFormulaRendererPostProcessor } from "./post-processor";
+import { createInlineFormulaRendererPlugin } from "./view-plugin";
+
+export class RendererManager extends Component {
+	renderers: Set<FormulaRenderer> = new Set();
+
+	// might be useful later
+	// this.app.workspace.trigger("post-processor-change"),
+
+	constructor(public plugin: FormulaForge) {
+		super();
+	}
+
+	onload(): void {
+		this.registerMarkdownPostProcessor();
+		this.registerMarkdownCodeBlockProcessor();
+		this.plugin.registerEditorExtension([
+			createInlineFormulaRendererPlugin(this.plugin),
+		]);
+	}
+
+	postProcessor?: MarkdownPostProcessor;
+
+	registerMarkdownPostProcessor(): void {
+		if (!this.plugin.getSettings().inlineCodeSyntax) return;
+
+		this.postProcessor = createFormulaRendererPostProcessor(this.plugin);
+		this.plugin.registerMarkdownPostProcessor(this.postProcessor);
+	}
+
+	registerMarkdownCodeBlockProcessor(): void {
+		if (!this.plugin.getSettings().codeBlockLanguage) return;
+
+		this.plugin.registerMarkdownCodeBlockProcessor(
+			...createFormulaRendererCodeblockProcessor(this.plugin)
+		);
+	}
+}

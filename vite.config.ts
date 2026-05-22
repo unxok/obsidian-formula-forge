@@ -1,0 +1,68 @@
+import { UserConfig, defineConfig } from "vite";
+import path from "path";
+import { builtinModules } from "node:module";
+// import { analyzer } from "vite-bundle-analyzer";
+import copy from "rollup-plugin-copy";
+
+export default defineConfig(async ({ mode }) => {
+	const { resolve } = path;
+	const prod = mode === "production";
+
+	return {
+		plugins: [
+			// analyzer(),
+			copy({
+				hook: "writeBundle",
+				targets: [
+					{
+						src: "dist/*",
+						dest: "../formula-forge-vault/.obsidian/plugins/formula-forge/",
+					},
+				],
+			}),
+		],
+		resolve: {
+			alias: {
+				"~": path.resolve(__dirname, "./src"),
+			},
+		},
+		build: {
+			lib: {
+				entry: resolve(__dirname, "src/main.ts"),
+				name: "main",
+				formats: ["cjs"],
+			},
+			minify: prod,
+			sourcemap: prod ? false : "inline",
+			cssCodeSplit: false,
+			emptyOutDir: false,
+			cssMinify: false,
+			outDir: "dist",
+			rollupOptions: {
+				input: {
+					main: resolve(__dirname, "src/main.ts"),
+				},
+				output: {
+					entryFileNames: "main.js",
+					assetFileNames: "styles.css",
+				},
+				external: [
+					"obsidian",
+					"electron",
+					"@codemirror/autocomplete",
+					"@codemirror/collab",
+					"@codemirror/commands",
+					"@codemirror/language",
+					"@codemirror/lint",
+					"@codemirror/search",
+					"@codemirror/state",
+					"@codemirror/view",
+					"@lezer/common",
+					"@lezer/highlight",
+					"@lezer/lr",
+					...builtinModules,
+				],
+			},
+		},
+	} satisfies UserConfig;
+});

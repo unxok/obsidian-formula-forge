@@ -1,0 +1,43 @@
+{
+	"name": "obsidian-formula-forge",
+	"version": "0.0.1",
+	"description": "Render bases formulas in your notes, define global formulas, API for custom functions, and more formula-related features.",
+	"main": "main.js",
+	"scripts": {
+		"dev": "npm run copy-manifest-to-vault && vite build --watch --mode=development",
+		"tsc": "tsc",
+		"copy-manifest-to-vault": "cp manifest.json ../formula-forge-vault/.obsidian/plugins/formula-forge/manifest.json",
+		"build": "vite build && cp manifest.json dist/",
+		"version": "node version-bump.mjs && git add manifest.json versions.json",
+		"release": "git tag -a %npm_config_tag% -m '%npm_config_tag%' && git push origin %npm_config_tag%",
+		"test": "vitest",
+		"lint": "npx eslint src/ >> lint.log"
+	},
+	"keywords": [],
+	"author": "Unxok",
+	"license": "MIT",
+	"devDependencies": {
+		"@types/luxon": "3.4.2",
+		"@types/node": "22.7.4",
+		"esbuild": "0.25.5",
+		"eslint": "^9.39.2",
+		"eslint-plugin-obsidianmd": "^0.1.9",
+		"luxon": "3.5.0",
+		"obsidian": "^1.12.3",
+		"obsidian-typings": "^5.21.0",
+		"rollup-plugin-copy": "^3.5.0",
+		"tslib": "2.7.0",
+		"typescript": "5.8.3",
+		"vite": "6.4.1",
+		"vite-bundle-analyzer": "1.2.1",
+		"vite-plugin-static-copy": "^3.1.6",
+		"vitest": "^4.0.16"
+	},
+	"dependencies": {
+		"@codemirror/language": "^6.12.3",
+		"@codemirror/state": "^6.6.0",
+		"@codemirror/view": "^6.38.6",
+		"monkey-around": "3.0.0",
+		"valibot": "^1.2.0"
+	}
+}

@@ -1,0 +1,28 @@
+{
+	"files": [],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.node.json"
+		}
+	],
+	"compilerOptions": {
+		"baseUrl": ".",
+		"noImplicitAny": true,
+		"strict": true,
+		"target": "ESNext",
+		"module": "nodenext",
+		"strictNullChecks": true,
+		"paths": {
+			"~/*": ["./src/*"],
+			"obsidian-typings/implementations": [
+				"./node_modules/obsidian-typings/dist/implementations.d.ts",
+				"./node_modules/obsidian-typings/dist/implementations.cjs"
+			]
+		},
+		"resolveJsonModule": true,
+		"moduleResolution": "nodenext"
+	}
+}

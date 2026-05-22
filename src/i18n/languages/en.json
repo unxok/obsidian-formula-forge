@@ -1,0 +1,77 @@
+{
+	"common": {
+		"delete": "Delete",
+		"edit": "Edit",
+		"save": "Save"
+	},
+	"settings": {
+		"formulaRendering": {
+			"groupHeading": "Formula rendering",
+			"inlineCodeSyntax": {
+				"name": "Inline code syntax",
+				"desc": "The syntax to use within the start of inline code to render a formula."
+			},
+			"codeBlockLanguage": {
+				"name": "Code block language",
+				"desc": "The language name to use for a code block to render a formula."
+			}
+		},
+		"globalFormulas": {
+			"groupheading": "Global formulas",
+			"addTooltip": "Add formula",
+			"deleteModal": {
+				"title": "Confirm deletion",
+				"warning": "This will permanently delete the global formula named \"{{name}}\""
+			},
+			"editorModal": {
+				"title": "Edit global formula",
+				"name": {
+					"name": "Name",
+					"desc": "The name to use to reference this global formula."
+				},
+				"description": {
+					"name": "Description",
+					"desc": "An optional description."
+				},
+				"formula": {
+					"name": "Formula",
+					"desc": "Syntax reference",
+					"placeholder": "x + y"
+				}
+			}
+		},
+		"customFunctions": {
+			"groupheading": "Custom functions",
+			"addTooltip": "Add function",
+			"deleteModal": {
+				"title": "Confirm deletion",
+				"warning": "This will permanently delete the custom function named \"{{name}}\""
+			},
+			"editorModal": {
+				"title": "Edit custom function",
+				"name": {
+					"name": "Name",
+					"desc": "The name to use to reference this global formula."
+				},
+				"description": {
+					"name": "Description",
+					"desc": "An optional description."
+				},
+				"parameters": {
+					"name": "Parameters",
+					"editorModal": {
+						"title": "Edit parameters",
+						"heading": "Parameters",
+						"namePlaceholder": "myArg",
+						"addTooltip": "Add parameter"
+					}
+				},
+				"formula": {
+					"name": "Formula",
+					"desc": "Syntax reference",
+					"placeholder": "x + y"
+				}
+			}
+		}
+	}
+}
