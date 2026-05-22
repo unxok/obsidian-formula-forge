@@ -30,9 +30,9 @@ jobs:
         uses: actions/attest@v4
         with:
           subject-path: |
-            main.js
-            manifest.json
-            styles.css
+            dist/main.js
+            dist/manifest.json
+            dist/styles.css
 
       # - name: Generate release notes from changelog
       #   id: notes
@@ -48,4 +48,4 @@ jobs:
 
           gh release create "$tag" \
             --title="$tag" \
-            main.js manifest.json styles.css
+            dist/main.js dist/manifest.json dist/styles.css
