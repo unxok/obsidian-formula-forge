@@ -9,7 +9,7 @@ jobs:
   build:
     permissions:
       id-token: write
-      contents: read
+      contents: write
       attestations: write
     runs-on: ubuntu-latest
 
@@ -31,7 +31,7 @@ jobs:
         with:
           subject-path: |
             dist/main.js
-            dist/manifest.json
+            manifest.json
             dist/styles.css
 
       # - name: Generate release notes from changelog
@@ -48,4 +48,4 @@ jobs:
 
           gh release create "$tag" \
             --title="$tag" \
-            dist/main.js dist/manifest.json dist/styles.css
+            dist/main.js manifest.json dist/styles.css
