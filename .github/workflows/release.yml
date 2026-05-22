@@ -23,7 +23,7 @@ jobs:
 
       - name: Build plugin
         run: |
-          npm install
+          npm install --force
           npm run build
 
       - name: Generate artifact attestation
