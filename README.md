@@ -1,6 +1,6 @@
-<center>
+<p align="center">
   <img src="https://github.com/unxok/obsidian-formula-forge/blob/main/assets/formula-forge.png" />
-</center>
+</p>
 <br />
 
 # Formula Forge
