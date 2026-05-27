@@ -81,21 +81,13 @@ export class Api extends Events {
 
 		const { plugin } = this;
 
-		class AnyValue extends Value {
-			toString(): string {
-				return "";
-			}
-			isTruthy(): boolean {
-				return true;
-			}
-		}
-
 		const getTypeValue = (
 			type: FormulaForgeSettings["customFunctions"][number]["parameters"][number]["type"]
 		) => {
 			switch (type) {
 				case "Any":
-					return AnyValue;
+					// @ts-expect-error TODO not sure how to tell TS to allow Value to be passed
+					return Value as typeof StringValue;
 				case "Boolean":
 					return BooleanValue;
 				case "Date":
