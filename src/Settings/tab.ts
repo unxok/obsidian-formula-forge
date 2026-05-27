@@ -137,14 +137,14 @@ export class FormulaForgeSettingTab extends PluginSettingTab {
 											.setButtonText(t("common.delete"))
 											.setWarning()
 											.onClick(async () => {
-													await plugin.updateSettings((prev) => {
-														const copy = { ...prev };
-														copy.globalFormulas = copy.globalFormulas.filter(
-															(_, i) => i !== index
-														);
-														return copy;
-													});
-													this.display();
+												await plugin.updateSettings((prev) => {
+													const copy = { ...prev };
+													copy.globalFormulas = copy.globalFormulas.filter(
+														(_, i) => i !== index
+													);
+													return copy;
+												});
+												this.display();
 												modal.close();
 											});
 									})
@@ -257,14 +257,14 @@ export class FormulaForgeSettingTab extends PluginSettingTab {
 											.setButtonText(t("common.delete"))
 											.setWarning()
 											.onClick(async () => {
-													await plugin.updateSettings((prev) => {
-														const copy = { ...prev };
-														copy.customFunctions = copy.customFunctions.filter(
-															(_, i) => i !== index
-														);
-														return copy;
-													});
-													this.display();
+												await plugin.updateSettings((prev) => {
+													const copy = { ...prev };
+													copy.customFunctions = copy.customFunctions.filter(
+														(_, i) => i !== index
+													);
+													return copy;
+												});
+												this.display();
 												modal.close();
 											});
 									})
@@ -367,155 +367,155 @@ class CustomFunctionModal extends ConfirmationModal {
 
 		const reRender = () => {
 			contentEl.empty();
-		new SettingGroup(contentEl)
-			.addSetting((s) => {
-				s.setName(t("settings.customFunctions.editorModal.name.name"))
-					.setDesc(t("settings.customFunctions.editorModal.name.desc"))
-					.addText((text) => {
-						text.setValue(globalFormula.name).onChange((v) => {
-							globalFormula.name = v;
-						});
-					});
-			})
-			.addSetting((s) => {
-				s.setName(t("settings.customFunctions.editorModal.description.name"))
-					.setDesc(t("settings.customFunctions.editorModal.description.desc"))
-					.addTextArea((text) => {
-						text.setValue(globalFormula.description).onChange((v) => {
-							globalFormula.description = v;
-						});
-					});
-			})
-			.addSetting((s) => {
-				s.setName(t("settings.customFunctions.editorModal.parameters.name"))
-					.setDesc(
-						window.createFragment((el) => {
-							const ul = el.createEl("ul");
-							this.customFunction.parameters.forEach(({ name, type }) => {
-								ul.createEl("li", { text: `${name} - ${type}` });
+			new SettingGroup(contentEl)
+				.addSetting((s) => {
+					s.setName(t("settings.customFunctions.editorModal.name.name"))
+						.setDesc(t("settings.customFunctions.editorModal.name.desc"))
+						.addText((text) => {
+							text.setValue(globalFormula.name).onChange((v) => {
+								globalFormula.name = v;
 							});
-						})
-					)
-					.addButton((button) => {
-						button.setButtonText(t("common.edit")).onClick(() => {
-							const modal = new Modal(this.plugin.app);
+						});
+				})
+				.addSetting((s) => {
+					s.setName(t("settings.customFunctions.editorModal.description.name"))
+						.setDesc(t("settings.customFunctions.editorModal.description.desc"))
+						.addTextArea((text) => {
+							text.setValue(globalFormula.description).onChange((v) => {
+								globalFormula.description = v;
+							});
+						});
+				})
+				.addSetting((s) => {
+					s.setName(t("settings.customFunctions.editorModal.parameters.name"))
+						.setDesc(
+							window.createFragment((el) => {
+								const ul = el.createEl("ul");
+								this.customFunction.parameters.forEach(({ name, type }) => {
+									ul.createEl("li", { text: `${name} - ${type}` });
+								});
+							})
+						)
+						.addButton((button) => {
+							button.setButtonText(t("common.edit")).onClick(() => {
+								const modal = new Modal(this.plugin.app);
 
-							modal.onOpen = () => {
-								modal.contentEl.empty();
-								modal.setTitle(
-									t(
-										"settings.customFunctions.editorModal.parameters.editorModal.title"
-									)
-								);
-
-								const group = new ReorderSettingGroup(modal.contentEl)
-									.setHeading(
+								modal.onOpen = () => {
+									modal.contentEl.empty();
+									modal.setTitle(
 										t(
-											"settings.customFunctions.editorModal.parameters.editorModal.heading"
+											"settings.customFunctions.editorModal.parameters.editorModal.title"
 										)
-									)
-									.addExtraButton((button) => {
-										button
-											.setTooltip(
-												t(
-													"settings.customFunctions.editorModal.parameters.editorModal.addTooltip"
-												)
-											)
-											.setIcon("lucide-plus-circle")
-											.onClick(() => {
-												this.customFunction.parameters.push({
-													name: "",
-													type: "Any",
-												});
-												modal.onOpen();
-											});
-									})
-									.onReorder((from, to) => {
-										this.customFunction.parameters = arrayMove(
-											this.customFunction.parameters,
-											from,
-											to
-										);
-										modal.onOpen();
-									});
+									);
 
-								this.customFunction.parameters.forEach((param, i) => {
-									group.addSetting((s) => {
-										s.addText((text) => {
-											text
-												.setPlaceholder(
+									const group = new ReorderSettingGroup(modal.contentEl)
+										.setHeading(
+											t(
+												"settings.customFunctions.editorModal.parameters.editorModal.heading"
+											)
+										)
+										.addExtraButton((button) => {
+											button
+												.setTooltip(
 													t(
-														"settings.customFunctions.editorModal.parameters.editorModal.namePlaceholder"
+														"settings.customFunctions.editorModal.parameters.editorModal.addTooltip"
 													)
 												)
-												.setValue(param.name)
-												.onChange((v) => {
-													param.name = v;
-												});
-										})
-											.addDropdown((dropdown) => {
-												type T =
-													FormulaForgeSettings["customFunctions"][number]["parameters"][number]["type"];
-												dropdown
-													.addOptions({
-														Any: "Any",
-														Boolean: "Boolean",
-														Date: "Date",
-														File: "File",
-														Link: "Link",
-														List: "List",
-														Number: "Number",
-														Object: "Object",
-														Regexp: "Regexp",
-														String: "String",
-													} satisfies Record<T, T>)
-													.setValue(param.type)
-													.onChange((v) => {
-														param.type = v as typeof param.type;
+												.setIcon("lucide-plus-circle")
+												.onClick(() => {
+													this.customFunction.parameters.push({
+														name: "",
+														type: "Any",
 													});
-											})
-											.addExtraButton((button) => {
-												button.setIcon("lucide-x").onClick(() => {
-													this.customFunction.parameters =
-														this.customFunction.parameters.filter((_, i2) => {
-															return i !== i2;
-														});
 													modal.onOpen();
 												});
-											});
+										})
+										.onReorder((from, to) => {
+											this.customFunction.parameters = arrayMove(
+												this.customFunction.parameters,
+												from,
+												to
+											);
+											modal.onOpen();
+										});
+
+									this.customFunction.parameters.forEach((param, i) => {
+										group.addSetting((s) => {
+											s.addText((text) => {
+												text
+													.setPlaceholder(
+														t(
+															"settings.customFunctions.editorModal.parameters.editorModal.namePlaceholder"
+														)
+													)
+													.setValue(param.name)
+													.onChange((v) => {
+														param.name = v;
+													});
+											})
+												.addDropdown((dropdown) => {
+													type T =
+														FormulaForgeSettings["customFunctions"][number]["parameters"][number]["type"];
+													dropdown
+														.addOptions({
+															Any: "Any",
+															Boolean: "Boolean",
+															Date: "Date",
+															File: "File",
+															Link: "Link",
+															List: "List",
+															Number: "Number",
+															Object: "Object",
+															Regexp: "Regexp",
+															String: "String",
+														} satisfies Record<T, T>)
+														.setValue(param.type)
+														.onChange((v) => {
+															param.type = v as typeof param.type;
+														});
+												})
+												.addExtraButton((button) => {
+													button.setIcon("lucide-x").onClick(() => {
+														this.customFunction.parameters =
+															this.customFunction.parameters.filter((_, i2) => {
+																return i !== i2;
+															});
+														modal.onOpen();
+													});
+												});
+										});
 									});
-								});
-							};
+								};
 
-							modal.onClose = () => {
+								modal.onClose = () => {
 									reRender();
-							};
+								};
 
-							modal.open();
+								modal.open();
+							});
 						});
-					});
-			})
-			.addSetting((s) => {
-				s.setName(t("settings.customFunctions.editorModal.formula.name"))
-					.setDesc(
-						window.createFragment((el) => {
-							el.createEl("a", {
-								text: t("settings.customFunctions.editorModal.formula.desc"),
-								href: "https://obsidian.md/help/formulas",
-							});
-						})
-					)
-					.addTextArea((text) => {
-						text
-							.setPlaceholder(
-								t("settings.customFunctions.editorModal.formula.placeholder")
-							)
-							.setValue(globalFormula.formula)
-							.onChange((v) => {
-								globalFormula.formula = v;
-							});
-					});
-			});
+				})
+				.addSetting((s) => {
+					s.setName(t("settings.customFunctions.editorModal.formula.name"))
+						.setDesc(
+							window.createFragment((el) => {
+								el.createEl("a", {
+									text: t("settings.customFunctions.editorModal.formula.desc"),
+									href: "https://obsidian.md/help/formulas",
+								});
+							})
+						)
+						.addTextArea((text) => {
+							text
+								.setPlaceholder(
+									t("settings.customFunctions.editorModal.formula.placeholder")
+								)
+								.setValue(globalFormula.formula)
+								.onChange((v) => {
+									globalFormula.formula = v;
+								});
+						});
+				});
 		};
 
 		reRender();
