@@ -365,6 +365,8 @@ class CustomFunctionModal extends ConfirmationModal {
 		const { contentEl, customFunction: globalFormula } = this;
 		this.setTitle(t("settings.customFunctions.editorModal.title"));
 
+		const reRender = () => {
+			contentEl.empty();
 		new SettingGroup(contentEl)
 			.addSetting((s) => {
 				s.setName(t("settings.customFunctions.editorModal.name.name"))
@@ -486,7 +488,7 @@ class CustomFunctionModal extends ConfirmationModal {
 							};
 
 							modal.onClose = () => {
-								this.onOpen();
+									reRender();
 							};
 
 							modal.open();
@@ -514,6 +516,9 @@ class CustomFunctionModal extends ConfirmationModal {
 							});
 					});
 			});
+		};
+
+		reRender();
 
 		this.addFooterButton((button) => {
 			button
