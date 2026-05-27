@@ -172,7 +172,12 @@ export class FormulaForge extends Plugin {
 					return (
 						functionA.name !== functionB.name ||
 						functionA.description !== functionB.description ||
-						functionA.formula !== functionB.formula
+						functionA.formula !== functionB.formula ||
+						functionA.parameters.length !== functionB.parameters.length ||
+						functionA.parameters.some((p1, i) => {
+							const p2 = functionB.parameters[i];
+							return p1.name !== p2.name || p1.type !== p2.name;
+						})
 					);
 				});
 
