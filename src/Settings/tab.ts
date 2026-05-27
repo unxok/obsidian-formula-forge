@@ -136,8 +136,7 @@ export class FormulaForgeSettingTab extends PluginSettingTab {
 										button
 											.setButtonText(t("common.delete"))
 											.setWarning()
-											.onClick(() => {
-												void (async () => {
+											.onClick(async () => {
 													await plugin.updateSettings((prev) => {
 														const copy = { ...prev };
 														copy.globalFormulas = copy.globalFormulas.filter(
@@ -146,7 +145,7 @@ export class FormulaForgeSettingTab extends PluginSettingTab {
 														return copy;
 													});
 													this.display();
-												})();
+												modal.close();
 											});
 									})
 									.open();
@@ -257,8 +256,7 @@ export class FormulaForgeSettingTab extends PluginSettingTab {
 										button
 											.setButtonText(t("common.delete"))
 											.setWarning()
-											.onClick(() => {
-												void (async () => {
+											.onClick(async () => {
 													await plugin.updateSettings((prev) => {
 														const copy = { ...prev };
 														copy.customFunctions = copy.customFunctions.filter(
@@ -267,7 +265,7 @@ export class FormulaForgeSettingTab extends PluginSettingTab {
 														return copy;
 													});
 													this.display();
-												})();
+												modal.close();
 											});
 									})
 									.open();
