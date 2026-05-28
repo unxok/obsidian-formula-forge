@@ -28,6 +28,14 @@ By default, the codeblock language is "bases-formula". For example:
 ```
 ````
 
+With formula codeblocks, you can also add CSS classes by adding them after the codeblock language. For example:
+
+````
+```bases-formula my-class my-other-class
+2+2
+```
+````
+
 ## Global formulas
 
 In the plugin settings, you can define global formulas which can be accessed in any base or formula in your vault.

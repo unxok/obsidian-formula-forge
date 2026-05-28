@@ -12,7 +12,19 @@ export const createFormulaRendererCodeblockProcessor = (
 				plugin.app.vault.getFileByPath(ctx.sourcePath) ?? undefined;
 			if (!containingFile) return;
 
-			const containerEl = window.createSpan();
+			const info = ctx.getSectionInfo(el);
+			if (!info) {
+				throw new Error("Info not found for provided element");
+			}
+			const langLine = info.text.split("\n")[info.lineStart];
+			const cssClasses = langLine
+				.split(" ")
+				.map((str) => str.trim())
+				.filter((str, i) => {
+					return i !== 0 && str;
+				});
+
+			const containerEl = window.createSpan({ cls: cssClasses });
 			el.replaceWith(containerEl);
 			const component = new MarkdownRenderChild(containerEl);
 			ctx.addChild(component);
