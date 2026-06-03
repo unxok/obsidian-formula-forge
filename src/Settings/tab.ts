@@ -1,10 +1,21 @@
-import { Modal, PluginSettingTab, SettingGroup } from "obsidian";
+import {
+	Menu,
+	Modal,
+	parseYaml,
+	PluginSettingTab,
+	setIcon,
+	SettingGroup,
+	stringifyYaml,
+	TextAreaComponent,
+} from "obsidian";
 import { ConfirmationModal } from "~/common/ConfirmationModal";
 import { ReorderSettingGroup } from "~/common/ReorderSettingGroup";
 import { FormulaForge } from "~/Plugin";
-import { FormulaForgeSettings } from "./schema";
-import { arrayMove } from "~/utils";
+import { FormulaForgeSettings, formulaForgeSettingsSchema } from "./schema";
+import { arrayMove, syncTryCatch } from "~/utils";
 import { t } from "~/i18n";
+import * as v from "valibot";
+import "./index.css";
 
 export class FormulaForgeSettingTab extends PluginSettingTab {
 	constructor(public plugin: FormulaForge) {
@@ -172,105 +183,299 @@ export class FormulaForgeSettingTab extends PluginSettingTab {
 			.addExtraButton((button) => {
 				button
 					.setIcon("lucide-plus-circle")
-					.setTooltip(t("settings.customFunctions.addTooltip"))
-					.onClick(() => {
-						const modal = new CustomFunctionModal(plugin, {
-							name: "",
-							description: "",
-							parameters: [],
-							formula: "",
-						});
-						modal
-							.onSave(() => {
-								void (async () => {
-									await plugin.updateSettings((prev) => ({
-										...prev,
-										customFunctions: [
-											...prev.customFunctions,
-											modal.customFunction,
-										],
-									}));
-									this.display();
-								})();
-							})
-							.open();
-					});
+					.setTooltip(t("settings.customFunctions.addTooltip"));
+
+				button.extraSettingsEl.addEventListener("click", (e) => {
+					new Menu()
+						.addItem((item) => {
+							item
+								.setTitle("Create new")
+								.setIcon("lucide-edit")
+								.onClick(() => {
+									const modal = new CustomFunctionModal(plugin, {
+										name: "",
+										description: "",
+										parameters: [],
+										formula: "",
+									});
+									modal
+										.onSave(() => {
+											void (async () => {
+												await plugin.updateSettings((prev) => ({
+													...prev,
+													customFunctions: [
+														...prev.customFunctions,
+														modal.customFunction,
+													],
+												}));
+												this.display();
+											})();
+										})
+										.open();
+								});
+						})
+						.addItem((item) => {
+							item
+								.setTitle("Import YAML")
+								.setIcon("lucide-import")
+								.onClick(() => {
+									const modal = new ConfirmationModal(plugin.app);
+
+									modal.setTitle("Import custom function as YAML");
+
+									modal.onOpen = () => {
+										const textarea = new TextAreaComponent(modal.contentEl);
+
+										const validationEl = modal.contentEl.createDiv({
+											cls: "formula-forge--valibort-errors-container",
+										});
+										const validationIconEl = validationEl.createDiv({
+											cls: "status-icon",
+										});
+										const validationLabelEl = validationEl.createSpan();
+
+										// const validate = (): boolean => {
+										// 	const formula = textarea.getValue();
+										// 	const instance = plugin.api.createFormula(formula);
+										// 	const isValid = instance.formula.type !== "invalid";
+										// 	validationEl.classList[isValid ? "remove" : "add"]("mod-error");
+										// 	const msg =
+										// 		// TODO can I get TS to infer this from isValid somehow?
+										// 		instance.formula.type !== "invalid"
+										// 			? ""
+										// 			: instance.formula.getErrorMessage();
+										// 	setTooltip(validationEl, msg);
+										// 	setIcon(validationIconEl, isValid ? "lucide-check-circle" : "lucide-x-circle");
+										// 	validationLabelEl.textContent = isValid ? "Valid formula" : "Invalid formula";
+										// 	return isValid;
+										// };
+
+										modal.addFooterButton((button) => {
+											const schema =
+												formulaForgeSettingsSchema.wrapped.entries
+													.customFunctions.wrapped.item;
+											let functionDefinition: v.InferOutput<
+												typeof schema
+											> | null = null;
+
+											button.setButtonText("Save").onClick(() => {
+												if (!functionDefinition) return;
+
+												void (async () => {
+													if (!functionDefinition) return;
+													await plugin.updateSettings((prev) => {
+														if (!functionDefinition) return prev;
+														return {
+															...prev,
+															customFunctions: [
+																...prev.customFunctions,
+																functionDefinition,
+															],
+														};
+													});
+													modal.close();
+													this.display();
+												})();
+											});
+
+											const tryParse = (str: string) =>
+												syncTryCatch(() => {
+													const yaml = parseYaml(str);
+
+													const parsed = v.safeParse(schema, yaml);
+													if (!parsed.success) {
+														throw new Error(v.summarize(parsed.issues));
+													}
+													return parsed.output;
+												});
+
+											textarea.onChange((v) => {
+												const result = tryParse(v);
+												functionDefinition = result.success
+													? result.data
+													: null;
+												button.setDisabled(!result.success);
+												validationEl.classList[
+													result.success ? "remove" : "add"
+												]("mod-error");
+												setIcon(
+													validationIconEl,
+													result.success
+														? "lucide-check-circle"
+														: "lucide-x-circle"
+												);
+												validationLabelEl.textContent = result.success
+													? "Valid function definition"
+													: result.error;
+												validationEl.setText(
+													result.success
+														? "Valid function definition"
+														: result.error
+												);
+											});
+										});
+									};
+									modal.open();
+								});
+						})
+						.showAtMouseEvent(e);
+				});
+
+				// .onClick(() => {
+				// 	const modal = new CustomFunctionModal(plugin, {
+				// 		name: "",
+				// 		description: "",
+				// 		parameters: [],
+				// 		formula: "",
+				// 	});
+				// 	modal
+				// 		.onSave(() => {
+				// 			void (async () => {
+				// 				await plugin.updateSettings((prev) => ({
+				// 					...prev,
+				// 					customFunctions: [
+				// 						...prev.customFunctions,
+				// 						modal.customFunction,
+				// 					],
+				// 				}));
+				// 				this.display();
+				// 			})();
+				// 		})
+				// 		.open();
+				// });
 			});
 
 		settings.customFunctions.forEach((globalFormula, index) => {
 			customFunctionsGroup.addSetting((s) => {
 				s.setName(globalFormula.name)
-					.setDesc(
-						window.createFragment((el) => {
-							if (globalFormula.description) {
-								el.appendText(globalFormula.description);
-								el.createEl("br");
-								el.createEl("br");
-							}
-							if (globalFormula.parameters) {
-								el.appendText("parameters:");
-								const ul = el.createEl("ul");
-								globalFormula.parameters.forEach(({ name, type }) => {
-									ul.createEl("li", { text: `${name} - ${type}` });
-								});
-								el.createEl("br");
-								// el.createEl("br");
-							}
-							el.appendText("formula: " + globalFormula.formula);
-						})
-					)
-
-					.addButton((button) => {
-						button.setButtonText(t("common.edit")).onClick(() => {
-							const modal = new CustomFunctionModal(plugin, {
-								...globalFormula,
-							});
-							modal
-								.onSave(() => {
-									void (async () => {
-										await plugin.updateSettings((prev) => {
-											const copy = { ...prev };
-											copy.customFunctions[index] = modal.customFunction;
-											return copy;
-										});
-										this.display();
-									})();
-								})
-								.open();
-						});
-					})
+					.setDesc(globalFormula.description)
 					.addExtraButton((button) => {
-						button
-							.setTooltip(t("common.delete"))
-							.setIcon("lucide-x")
-							.onClick(() => {
-								const modal = new ConfirmationModal(plugin.app);
-								modal
-									.setTitle(t("settings.customFunctions.deleteModal.title"))
-									.setContent(
-										t("settings.customFunctions.deleteModal.warning", {
-											name: globalFormula.name,
-										})
-									)
-									.addFooterButton((button) => {
-										button
-											.setButtonText(t("common.delete"))
-											.setWarning()
-											.onClick(async () => {
-												await plugin.updateSettings((prev) => {
-													const copy = { ...prev };
-													copy.customFunctions = copy.customFunctions.filter(
-														(_, i) => i !== index
-													);
-													return copy;
-												});
-												this.display();
-												modal.close();
+						button.setIcon("lucide-more-horizontal");
+						button.extraSettingsEl.addEventListener("click", (e) => {
+							new Menu()
+								.addItem((item) => {
+									item
+										.setTitle("Edit")
+										.setIcon("lucide-edit")
+										.onClick(() => {
+											const modal = new CustomFunctionModal(plugin, {
+												...globalFormula,
 											});
-									})
-									.open();
-							});
+											modal
+												.onSave(() => {
+													void (async () => {
+														await plugin.updateSettings((prev) => {
+															const copy = { ...prev };
+															copy.customFunctions[index] =
+																modal.customFunction;
+															return copy;
+														});
+														this.display();
+													})();
+												})
+												.open();
+										});
+								})
+								.addItem((item) => {
+									item
+										.setTitle("Copy YAML")
+										.setIcon("lucide-copy")
+										.onClick(async () => {
+											const yaml = stringifyYaml(globalFormula);
+											await navigator.clipboard.writeText(yaml);
+											new window.Notice("Copied function as YAML");
+										});
+								})
+								.addItem((item) => {
+									item
+										.setTitle("Delete")
+										.setIcon("trash")
+										.setWarning(true)
+										.onClick(() => {
+											const modal = new ConfirmationModal(plugin.app);
+											modal
+												.setTitle(
+													t("settings.customFunctions.deleteModal.title")
+												)
+												.setContent(
+													t("settings.customFunctions.deleteModal.warning", {
+														name: globalFormula.name,
+													})
+												)
+												.addFooterButton((button) => {
+													button
+														.setButtonText(t("common.delete"))
+														.setWarning()
+														.onClick(async () => {
+															await plugin.updateSettings((prev) => {
+																const copy = { ...prev };
+																copy.customFunctions =
+																	copy.customFunctions.filter(
+																		(_, i) => i !== index
+																	);
+																return copy;
+															});
+															this.display();
+															modal.close();
+														});
+												})
+												.open();
+										});
+								})
+								.showAtMouseEvent(e);
+						});
 					});
+				// .addButton((button) => {
+				// 	button.setButtonText(t("common.edit")).onClick(() => {
+				// 		const modal = new CustomFunctionModal(plugin, {
+				// 			...globalFormula,
+				// 		});
+				// 		modal
+				// 			.onSave(() => {
+				// 				void (async () => {
+				// 					await plugin.updateSettings((prev) => {
+				// 						const copy = { ...prev };
+				// 						copy.customFunctions[index] = modal.customFunction;
+				// 						return copy;
+				// 					});
+				// 					this.display();
+				// 				})();
+				// 			})
+				// 			.open();
+				// 	});
+				// })
+				// .addExtraButton((button) => {
+				// 	button
+				// 		.setTooltip(t("common.delete"))
+				// 		.setIcon("lucide-x")
+				// 		.onClick(() => {
+				// 			const modal = new ConfirmationModal(plugin.app);
+				// 			modal
+				// 				.setTitle(t("settings.customFunctions.deleteModal.title"))
+				// 				.setContent(
+				// 					t("settings.customFunctions.deleteModal.warning", {
+				// 						name: globalFormula.name,
+				// 					})
+				// 				)
+				// 				.addFooterButton((button) => {
+				// 					button
+				// 						.setButtonText(t("common.delete"))
+				// 						.setWarning()
+				// 						.onClick(async () => {
+				// 							await plugin.updateSettings((prev) => {
+				// 								const copy = { ...prev };
+				// 								copy.customFunctions = copy.customFunctions.filter(
+				// 									(_, i) => i !== index
+				// 								);
+				// 								return copy;
+				// 							});
+				// 							this.display();
+				// 							modal.close();
+				// 						});
+				// 				})
+				// 				.open();
+				// 		});
+				// });
 			});
 		});
 	}
