@@ -113,6 +113,15 @@ interface BasesControllerResultsValueNote {
 	valuesRaw(): unknown;
 }
 
+interface FormulaFunctionParam {
+	name: string;
+	// eslint-disable-next-line -- TODO this is the only way to type this correctly AFAIK
+	type: (new (...args: any[]) => Value)[];
+	variadic?: boolean;
+	optional?: boolean;
+	customWidget?: string;
+}
+
 declare module "obsidian-typings" {
 	interface EmbedRegistryEmbedByExtensionRecord {
 		base: (
@@ -243,11 +252,7 @@ declare module "obsidian" {
 			ctx: null;
 			docString: () => string;
 			name: string;
-			params: {
-				name: string;
-				// eslint-disable-next-line -- TODO this is the only way to type this correctly AFAIK
-				type: (new (...args: any[]) => Value)[];
-			}[];
+			params: FormulaFunctionParam[];
 			// eslint-disable-next-line -- TODO this is the only way to type this correctly AFAIK
 			applyWithContext: (ctx: BasesEntry, ...args: any[]) => Value;
 		}): void;
@@ -259,11 +264,7 @@ declare module "obsidian" {
 				ctx: null;
 				docString: () => string;
 				name: string;
-				params: {
-					name: string;
-					// eslint-disable-next-line -- TODO this is the only way to type this correctly AFAIK
-					type: (new (...args: any[]) => Value)[];
-				}[];
+				params: FormulaFunctionParam[];
 				// eslint-disable-next-line -- TODO this is the only way to type this correctly AFAIK
 				applyWithContext: (ctx: BasesEntry, ...args: any[]) => Value;
 			}
