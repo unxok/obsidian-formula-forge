@@ -5,9 +5,12 @@ import {
 	ListValue,
 	MarkdownPreviewRenderer,
 	Notice,
+	NullValue,
 	Plugin,
 	PluginManifest,
+	StringValue,
 	TFile,
+	Value,
 } from "obsidian";
 import { FormulaForgeSettings, formulaForgeSettingsSchema } from "~/Settings";
 import * as v from "valibot";
@@ -15,6 +18,8 @@ import { PrototypeResolver } from "~/PrototypeResolver";
 import { Api } from "~/Api";
 import { FormulaForgeSettingTab } from "~/Settings/tab";
 import { RendererManager } from "~/RendererManager";
+import { around, dedupe } from "monkey-around";
+import { monkeyAroundKey } from "~/utils";
 
 export class FormulaForge extends Plugin {
 	prototypeResolver: PrototypeResolver;
@@ -277,28 +282,52 @@ export class FormulaForge extends Plugin {
 			},
 		});
 
-		// TODO can't figure out how to allow using variable names in an expression passed as an argument, similar to how List.reduce() does it
-		// this.registerInstanceFunc(ListValue, {
-		// 	name: "some",
-		// 	ctx: null,
-		// 	docString: () =>
-		// 		"Determines whether expression is true for any item in the list.",
-		// 	params: [
-		// 		{ name: "list", type: [ListValue] },
-		// 		{ name: "value", type: [BooleanValue] },
-		// 	],
-		// 	applyWithContext: (ctx, list: ListValue, value: BooleanValue) => {
-		// 		around(ctx, {
-		// 			getByIdentifier: old => dedupe(monkeyAroundKey, old, function(identifier) {
-		// 				// @ts-expect-error
-		// 				const that = this as typeof ctx;
+		// @ts-expect-error TODO
+		this.registerInstanceFunc(Value, {
+			name: "then",
+			ctx: null,
+			docString: () => "",
+			params: [
+				{ name: "self", type: [Value] },
+				{ name: "expression", type: [Value] },
+			],
+			applyWithContext(_ctx, _self, expression: Value) {
+				return expression;
+			},
+		});
 
-		// 				return old.call(that, identifier);
-		// 			})
-		// 		})
+		this.registerGlobalFunc({
+			name: "define",
+			ctx: null,
+			docString: () => "Define a variable",
+			params: [
+				{
+					name: "name",
+					type: [StringValue],
+				},
+				{
+					name: "value",
+					// @ts-expect-error TODO
+					type: [Value as typeof StringValue],
+				},
+			],
+			applyWithContext: (ctx, name: StringValue, value: Value) => {
+				around(ctx, {
+					getByIdentifier: (old) =>
+						dedupe(monkeyAroundKey, old, function (ident) {
+							// @ts-expect-error
+							const that = this as typeof ctx;
 
-		// 		return list.get(list.length() - 1);
-		// 	},
-		// });
+							if (ident === name.data) {
+								return value;
+							}
+
+							return old.call(that, ident);
+						}),
+				});
+
+				return NullValue.value;
+			},
+		});
 	}
 }
