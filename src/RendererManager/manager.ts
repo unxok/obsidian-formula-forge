@@ -22,6 +22,11 @@ export class RendererManager extends Component {
 		this.plugin.registerEditorExtension([
 			createInlineFormulaRendererPlugin(this.plugin),
 		]);
+		this.registerEvent(
+			this.plugin.app.metadataCache.on("resolved", () =>
+				this.reRenderFormulas()
+			)
+		);
 	}
 
 	postProcessor?: MarkdownPostProcessor;
@@ -39,5 +44,11 @@ export class RendererManager extends Component {
 		this.plugin.registerMarkdownCodeBlockProcessor(
 			...createFormulaRendererCodeblockProcessor(this.plugin)
 		);
+	}
+
+	reRenderFormulas(): void {
+		this.renderers.forEach((renderer) => {
+			renderer.render();
+		});
 	}
 }
