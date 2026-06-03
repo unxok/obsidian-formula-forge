@@ -15,3 +15,53 @@ export const arrayMove = <T>(arr: T[], from: number, to: number) => {
 	copy.splice(to, 0, item);
 	return copy;
 };
+
+export type TryCatchResult<T> =
+	| {
+			success: true;
+			data: T;
+			error: undefined;
+	  }
+	| {
+			success: false;
+			data: undefined;
+			error: string;
+	  };
+
+/**
+ * Async functional wrapper for try-catch blocks
+ */
+export const tryCatch = async <T>(
+	toTry: Promise<T> | (() => Promise<T> | T)
+): Promise<TryCatchResult<T>> => {
+	try {
+		const data = typeof toTry === "function" ? await toTry() : await toTry;
+		return { success: true, data, error: undefined };
+	} catch (e) {
+		const error =
+			e instanceof Error
+				? e.message
+				: typeof e === "string"
+				? e
+				: "Unknown error";
+		return { success: false, data: undefined, error };
+	}
+};
+
+/**
+ * Synchronous functional wrapper for try-catch blocks
+ */
+export const syncTryCatch = <T>(toTry: () => T): TryCatchResult<T> => {
+	try {
+		const data = toTry();
+		return { success: true, data, error: undefined };
+	} catch (e) {
+		const error =
+			e instanceof Error
+				? e.message
+				: typeof e === "string"
+				? e
+				: "Unknown error";
+		return { success: false, data: undefined, error };
+	}
+};
