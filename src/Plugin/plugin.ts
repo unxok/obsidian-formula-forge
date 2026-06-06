@@ -1,5 +1,6 @@
 import {
 	App,
+	BasesEntry,
 	debounce,
 	FileValue,
 	ListValue,
@@ -18,8 +19,8 @@ import { PrototypeResolver } from "~/PrototypeResolver";
 import { Api } from "~/Api";
 import { FormulaForgeSettingTab } from "~/Settings/tab";
 import { RendererManager } from "~/RendererManager";
-import { around, dedupe } from "monkey-around";
-import { monkeyAroundKey } from "~/utils";
+import { around } from "monkey-around";
+import { AnyValue } from "~/utils";
 
 export class FormulaForge extends Plugin {
 	prototypeResolver: PrototypeResolver;
@@ -251,50 +252,49 @@ export class FormulaForge extends Plugin {
 			},
 		});
 
-		this.registerInstanceFunc(ListValue, {
-			name: "first",
-			ctx: null,
-			docString: () => "Returns the first item of the list.",
-			params: [{ name: "list", type: [ListValue] }],
-			applyWithContext: (_ctx, list: ListValue) => {
-				return list.get(0);
-			},
-		});
-
-		this.registerInstanceFunc(ListValue, {
-			name: "last",
-			ctx: null,
-			docString: () => "Returns the last item of the list.",
-			params: [{ name: "list", type: [ListValue] }],
-			applyWithContext: (_ctx, list: ListValue) => {
-				return list.get(list.length() - 1);
-			},
-		});
-
-		this.registerInstanceFunc(ListValue, {
-			name: "random",
-			ctx: null,
-			docString: () => "Returns a random item from the list.",
-			params: [{ name: "list", type: [ListValue] }],
-			applyWithContext: (_ctx, list: ListValue) => {
-				const randomIndex = Math.floor(Math.random() * list.length());
-				return list.get(randomIndex);
-			},
-		});
-
-		// @ts-expect-error TODO
-		this.registerInstanceFunc(Value, {
+		this.registerGlobalFunc({
 			name: "then",
 			ctx: null,
-			docString: () => "",
-			params: [
-				{ name: "self", type: [Value] },
-				{ name: "expression", type: [Value] },
-			],
-			applyWithContext(_ctx, _self, expression: Value) {
-				return expression;
+			docString: () => "Returns the last value provided",
+			params: [{ name: "any", type: [AnyValue], variadic: true }],
+			applyWithContext(_ctx, _self, ...any) {
+				return any.pop() ?? NullValue.value;
 			},
 		});
+
+		this.registerInstanceFunc(NullValue, {
+			name: "then",
+			ctx: null,
+			docString: () => "Returns the last value provided",
+			params: [
+				{ name: "self", type: [NullValue] },
+				{ name: "any", type: [AnyValue], variadic: true },
+			],
+			applyWithContext(_ctx, _self, ...any) {
+				return any.pop() ?? NullValue.value;
+			},
+		});
+
+		const patchContextForDefine = (
+			ctx: BasesEntry,
+			name: StringValue,
+			value: Value
+		) => {
+			around(ctx, {
+				getByIdentifier: function (old) {
+					return function (ident) {
+						// @ts-expect-error
+						const that = this as typeof ctx;
+
+						if (ident === name.data) {
+							return value;
+						}
+
+						return old.call(that, ident);
+					};
+				},
+			});
+		};
 
 		this.registerGlobalFunc({
 			name: "define",
@@ -307,25 +307,37 @@ export class FormulaForge extends Plugin {
 				},
 				{
 					name: "value",
-					// @ts-expect-error TODO
-					type: [Value as typeof StringValue],
+
+					type: [AnyValue],
 				},
 			],
-			applyWithContext: (ctx, name: StringValue, value: Value) => {
-				around(ctx, {
-					getByIdentifier: (old) =>
-						dedupe(monkeyAroundKey, old, function (ident) {
-							// @ts-expect-error
-							const that = this as typeof ctx;
+			applyWithContext: (ctx, name, value) => {
+				patchContextForDefine(ctx, name, value);
+				return NullValue.value;
+			},
+		});
 
-							if (ident === name.data) {
-								return value;
-							}
+		this.registerInstanceFunc(NullValue, {
+			name: "define",
+			ctx: null,
+			docString: () => "Define a variable",
+			params: [
+				{
+					name: "self",
+					type: [NullValue],
+				},
+				{
+					name: "name",
+					type: [StringValue],
+				},
+				{
+					name: "value",
 
-							return old.call(that, ident);
-						}),
-				});
-
+					type: [AnyValue],
+				},
+			],
+			applyWithContext: (ctx, _self, name, value) => {
+				patchContextForDefine(ctx, name, value);
 				return NullValue.value;
 			},
 		});
