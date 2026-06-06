@@ -59,3 +59,42 @@ class Checkbox {
 		return this;
 	}
 }
+
+export const confirm = ({
+	app,
+	title,
+	desc = "",
+	confirmLabel = "Confirm",
+	cancelLabel = "Cancel",
+	onClose,
+}: {
+	app: App;
+	title: string;
+	desc?: string | DocumentFragment;
+	confirmLabel?: string;
+	cancelLabel?: string;
+	onClose: (isConfirmed?: boolean) => void | Promise<void>;
+}) => {
+	let isConfirmed = false;
+	const modal = new ConfirmationModal(app);
+	modal.setTitle(title);
+	modal.setContent(desc);
+	modal.addFooterButton((button) => {
+		button.setButtonText(cancelLabel);
+		button.onClick(() => {
+			modal.close();
+		});
+	});
+	modal.addFooterButton((button) => {
+		button.setButtonText(confirmLabel);
+		button.setWarning();
+		button.onClick(() => {
+			isConfirmed = true;
+			modal.close();
+		});
+	});
+	modal.onClose = () => {
+		void onClose(isConfirmed);
+	};
+	modal.open();
+};
