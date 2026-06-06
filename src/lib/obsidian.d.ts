@@ -6,6 +6,7 @@ import {
 	Value,
 	View,
 	EventRef,
+	Constructor,
 } from "obsidian";
 import {
 	BasesContext,
@@ -113,14 +114,23 @@ interface BasesControllerResultsValueNote {
 	valuesRaw(): unknown;
 }
 
-interface FormulaFunctionParam {
+type FormulaFunctionParam<T extends Value> = {
 	name: string;
-	// eslint-disable-next-line -- TODO this is the only way to type this correctly AFAIK
-	type: (new (...args: any[]) => Value)[];
+	type: readonly Constructor<T>[];
 	variadic?: boolean;
 	optional?: boolean;
 	customWidget?: string;
+};
+
+type FormulaFunctionParamToValue<P> = P extends {
+	type: readonly Constructor<infer T>[];
 }
+	? T
+	: never;
+
+type FormulaFunctionParamsToArgs<P extends readonly FormulaFunctionParam[]> = {
+	[K in keyof P]: FormulaFunctionParamToValue<P[K]>;
+};
 
 declare module "obsidian-typings" {
 	interface EmbedRegistryEmbedByExtensionRecord {
@@ -248,25 +258,28 @@ declare module "obsidian" {
 	}
 
 	interface Plugin {
-		registerGlobalFunc(func: {
+		registerGlobalFunc<const P extends readonly FormulaFunctionParam[]>(func: {
 			ctx: null;
 			docString: () => string;
 			name: string;
-			params: FormulaFunctionParam[];
-			// eslint-disable-next-line -- TODO this is the only way to type this correctly AFAIK
-			applyWithContext: (ctx: BasesEntry, ...args: any[]) => Value;
+			params: P;
+			applyWithContext: (
+				ctx: BasesEntry,
+				...args: FormulaFunctionParamsToArgs<P>
+			) => Value;
 		}): void;
 
-		registerInstanceFunc(
-			// eslint-disable-next-line -- TODO this is the only way to type this correctly AFAIK
-			value: new (...args: any[]) => Value,
+		registerInstanceFunc<const P extends readonly FormulaFunctionParam[]>(
+			value: Constructor<Value>,
 			func: {
 				ctx: null;
 				docString: () => string;
 				name: string;
-				params: FormulaFunctionParam[];
-				// eslint-disable-next-line -- TODO this is the only way to type this correctly AFAIK
-				applyWithContext: (ctx: BasesEntry, ...args: any[]) => Value;
+				params: P;
+				applyWithContext: (
+					ctx: BasesEntry,
+					...args: FormulaFunctionParamsToArgs<P>
+				) => Value;
 			}
 		): void;
 	}
