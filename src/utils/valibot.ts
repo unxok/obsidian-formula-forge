@@ -5,6 +5,7 @@ import * as v from "valibot";
  */
 export const vOptionalObjectWithDefault = <
 	T extends {
+		// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- I am intentionally wanint a non-nullish value
 		[key: string]: v.OptionalSchema<v.GenericSchema, {}>;
 	}
 >(
@@ -16,6 +17,7 @@ export const vOptionalObjectWithDefault = <
 
 export type VOptionalObjectWithDefault = ReturnType<
 	typeof vOptionalObjectWithDefault<
+		// eslint-disable-next-line @typescript-eslint/no-empty-object-type -- I am intentionally wanint a non-nullish value
 		Record<string, v.OptionalSchema<v.GenericSchema, {}>>
 	>
 >;

@@ -352,14 +352,14 @@ export class PrototypeResolver extends Component {
 		const { plugin } = this;
 		const fakeFile = this.getFakeFile();
 
-		// eslint-disable-next-line -- Necessary to reference the resolver instance
+		// eslint-disable-next-line @typescript-eslint/no-this-alias -- Necessary to reference the resolver instance
 		const resolver = this;
 
 		const uninstall = around(plugin.app.vault, {
 			read: (old) =>
 				dedupe(monkeyAroundKey, old, function (file) {
 					// @ts-expect-error
-					const that = this as typeof resolver.plugin.app.vault;
+					const that = this as typeof plugin.app.vault;
 
 					if (file.path === fakeFile.path) {
 						return new Promise((res) => {

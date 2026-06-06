@@ -39,8 +39,6 @@ export class FormulaForge extends Plugin {
 		this.registerUtilityFunctions();
 
 		await this.loadSettings();
-		// eslint-disable-next-line
-		new Notice("Formula Forge loaded");
 
 		this.addSettingTab(new FormulaForgeSettingTab(this));
 		this.addChild(this.prototypeResolver);

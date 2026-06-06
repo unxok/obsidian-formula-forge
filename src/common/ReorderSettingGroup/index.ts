@@ -25,7 +25,7 @@ export class ReorderSettingGroup extends SettingGroup {
 			settingEl.classList.add("formula-forge--reorder-setting-group-item");
 
 			settingEl.addEventListener("dragover", (e) => {
-				if (!(e instanceof DragEvent)) return;
+				if (!e.instanceOf(DragEvent)) return;
 
 				this.removeDragIndicator();
 				this.draggedOverIndex = index;
@@ -53,7 +53,7 @@ export class ReorderSettingGroup extends SettingGroup {
 				const { extraSettingsEl } = button;
 				extraSettingsEl.setAttribute("draggable", "true");
 				extraSettingsEl.addEventListener("dragstart", (e) => {
-					if (!(e instanceof DragEvent)) return;
+					if (!e.instanceOf(DragEvent)) return;
 					e.dataTransfer?.setDragImage(window.createDiv(), 0, 0);
 					this.draggingIndex = index;
 				});
