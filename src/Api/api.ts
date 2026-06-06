@@ -1,13 +1,15 @@
-import { around, dedupe } from "monkey-around";
+import { around } from "monkey-around";
 import {
 	BasesEntry,
 	BooleanValue,
+	Constructor,
 	DateValue,
 	EventRef,
 	Events,
 	FileValue,
 	LinkValue,
 	ListValue,
+	NullValue,
 	NumberValue,
 	ObjectValue,
 	PrimitiveValue,
@@ -19,7 +21,7 @@ import {
 import { BasesFormula } from "obsidian-typings";
 import { FormulaForge } from "~/Plugin";
 import { FormulaForgeSettings } from "~/Settings";
-import { monkeyAroundKey } from "~/utils";
+import { AnyValue } from "~/utils";
 
 export class Api extends Events {
 	constructor(public plugin: FormulaForge) {
@@ -74,6 +76,8 @@ export class Api extends Events {
 	registerFunction = ({
 		name,
 		description,
+		scope,
+		scopeType,
 		parameters,
 		formula,
 	}: FormulaForgeSettings["customFunctions"][number]): void => {
@@ -81,54 +85,55 @@ export class Api extends Events {
 
 		const { plugin } = this;
 
-		const getTypeValue = (
-			type: FormulaForgeSettings["customFunctions"][number]["parameters"][number]["type"]
-		) => {
-			switch (type) {
-				case "Any":
-					// @ts-expect-error TODO not sure how to tell TS to allow Value to be passed
-					return Value as typeof StringValue;
-				case "Boolean":
-					return BooleanValue;
-				case "Date":
-					return DateValue;
-				case "File":
-					return FileValue;
-				case "Link":
-					return LinkValue;
-				case "List":
-					return ListValue;
-				case "Number":
-					return NumberValue;
-				case "Object":
-					return ObjectValue;
-				case "Regexp":
-					return RegExpValue;
-				case "String":
-				default:
-					return StringValue;
-			}
-		};
+		type Param =
+			FormulaForgeSettings["customFunctions"][number]["parameters"][number];
 
-		const params = parameters.map(({ name, type }) => ({
+		type ValueTypeString = Param["type"];
+
+		const valueTypeMapping = {
+			Any: AnyValue,
+			Boolean: BooleanValue,
+			Date: DateValue,
+			File: FileValue,
+			Link: LinkValue,
+			List: ListValue,
+			Null: NullValue,
+			Number: NumberValue,
+			Object: ObjectValue,
+			Regexp: RegExpValue,
+			String: StringValue,
+		} satisfies Record<ValueTypeString, Constructor<Value>>;
+
+		const params = parameters.map(({ name, type, optional, variadic }) => ({
 			name,
-			type: [getTypeValue(type)],
+			type: [valueTypeMapping[type]],
+			optional,
+			variadic,
 		}));
 
-		this.plugin.registerGlobalFunc({
+		if (scope === "Type") {
+			params.unshift({
+				name: "self",
+				type: [valueTypeMapping[scopeType]],
+				optional: false,
+				variadic: false,
+			});
+		}
+
+		const func = {
 			name,
 			docString: () => description,
 			ctx: null,
 			params,
 			applyWithContext: (ctx: BasesEntry, ...args: Value[]) => {
-				const namedParamValues = parameters.reduce((acc, cur, i) => {
+				const namedParamValues = params.reduce((acc, cur, i) => {
 					acc[cur.name] = args[i];
 					return acc;
 				}, {} as Record<string, Value>);
 
 				around(ctx, {
-					getByIdentifier: (old) =>
-						dedupe(monkeyAroundKey, old, function (identifier) {
+					getByIdentifier(old) {
+						return function (identifier) {
 							// @ts-expect-error
 							const that = this as BasesEntry;
 
@@ -137,14 +142,22 @@ export class Api extends Events {
 							}
 
 							return old.call(that, identifier);
-						}),
+						};
+					},
 				});
 
 				const formulaInstance = plugin.api.createFormula(formula);
 
 				return formulaInstance.getValue(ctx);
 			},
-		});
+		};
+
+		if (scope === "Global") {
+			this.plugin.registerGlobalFunc(func);
+		}
+		if (scope === "Type") {
+			this.plugin.registerInstanceFunc(valueTypeMapping[scopeType], func);
+		}
 
 		const remover = (plugin._events as (EventRef | (() => void))[]).last();
 		if (!(remover instanceof Function)) return;
