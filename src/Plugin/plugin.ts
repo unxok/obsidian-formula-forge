@@ -21,11 +21,13 @@ import { FormulaForgeSettingTab } from "~/Settings/tab";
 import { RendererManager } from "~/RendererManager";
 import { around } from "monkey-around";
 import { AnyValue } from "~/utils";
+import { IntegrationManager } from "~/IntegrationManager";
 
 export class FormulaForge extends Plugin {
 	prototypeResolver: PrototypeResolver;
 	rendererManager: RendererManager;
 	api: Api;
+	integrationsManager: IntegrationManager;
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
@@ -33,6 +35,7 @@ export class FormulaForge extends Plugin {
 		this.prototypeResolver = new PrototypeResolver(this);
 		this.rendererManager = new RendererManager(this);
 		this.api = new Api(this);
+		this.integrationsManager = new IntegrationManager(this);
 	}
 
 	async onload(): Promise<void> {
@@ -46,13 +49,10 @@ export class FormulaForge extends Plugin {
 		this.prototypeResolver.onReady(() => {
 			this.api.trigger("ready");
 			this.addChild(this.rendererManager);
+			this.addChild(this.integrationsManager);
 
 			if (!this.app.workspace.layoutReady) return;
 			this.rebuildLeaves({ bases: true, formulas: true });
-
-			// this.getSettings().customFunctions.forEach((func) => {
-			// 	this.api.registerFunction(func);
-			// });
 
 			this.registerCustomFunctions();
 		});

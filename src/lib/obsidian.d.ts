@@ -209,6 +209,10 @@ declare module "obsidian-typings" {
 	interface MetadataEditor {
 		focusProperty(property: string): void;
 	}
+
+	interface TemplatesPluginInstance {
+		insertTemplate(file: TFile): Promise<void>;
+	}
 }
 
 declare module "obsidian" {

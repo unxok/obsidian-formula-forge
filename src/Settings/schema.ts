@@ -60,6 +60,9 @@ export const formulaForgeSettingsSchema = vOptionalObjectWithDefault({
 		),
 		[]
 	),
+	integrations: vOptionalObjectWithDefault({
+		templates: v.optional(v.boolean(), true),
+	}),
 });
 
 /**
