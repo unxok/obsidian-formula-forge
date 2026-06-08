@@ -46,29 +46,11 @@ export class FormulaForge extends Plugin {
 		this.prototypeResolver.onReady(() => {
 			this.api.trigger("ready");
 			this.addChild(this.rendererManager);
+			this.registerCustomFunctions();
 
 			if (!this.app.workspace.layoutReady) return;
 			this.rebuildLeaves({ bases: true, formulas: true });
-
-			// this.getSettings().customFunctions.forEach((func) => {
-			// 	this.api.registerFunction(func);
-			// });
-
-			this.registerCustomFunctions();
 		});
-
-		// this.registerGlobalFunc({
-		// 	name: "mod",
-		// 	docString: () => "moddd",
-		// 	ctx: null,
-		// 	params: [{ name: "score", type: [NumberValue] }],
-		// 	applyWithContext: (ctx, ...args) => {
-		// 		console.log("ctx", ctx);
-		// 		console.log(score);
-		// 		const mod = Math.floor((score.data - 10) / 2);
-		// 		return new NumberValue(mod);
-		// 	},
-		// });
 	}
 
 	onunload(): void {
@@ -225,12 +207,18 @@ export class FormulaForge extends Plugin {
 		});
 	}
 
+	/**
+	 * Register the custom functions defined in the settings
+	 */
 	registerCustomFunctions(): void {
 		this.getSettings().customFunctions.forEach((func) => {
 			this.api.registerFunction(func);
 		});
 	}
 
+	/**
+	 * Register utility functions like files(), define(), and then()
+	 */
 	registerUtilityFunctions(): void {
 		this.registerGlobalFunc({
 			name: "files",
