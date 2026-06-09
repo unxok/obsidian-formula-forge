@@ -3,8 +3,10 @@ import {
 	BasesEntry,
 	debounce,
 	FileValue,
+	HTMLValue,
 	ListValue,
 	MarkdownPreviewRenderer,
+	MarkdownRenderer,
 	Notice,
 	NullValue,
 	Plugin,
@@ -325,6 +327,33 @@ export class FormulaForge extends Plugin {
 			applyWithContext: (ctx, _self, name, value) => {
 				patchContextForDefine(ctx, name, value);
 				return NullValue.value;
+			},
+		});
+
+		this.registerGlobalFunc({
+			name: "md",
+			ctx: null,
+			docString: () => "Render markdown",
+			params: [
+				{
+					name: "input",
+					type: [StringValue],
+				},
+			],
+			applyWithContext: (ctx, input) => {
+				const value = new HTMLValue(input.data);
+
+				value.renderTo = (el) => {
+					void MarkdownRenderer.render(
+						this.app,
+						value.data,
+						el,
+						ctx.file.path,
+						ctx.ctx
+					);
+				};
+
+				return value;
 			},
 		});
 	}
