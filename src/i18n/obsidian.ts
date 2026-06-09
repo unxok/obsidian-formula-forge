@@ -2778,7 +2778,7 @@ export type ObsidianDefaultText = {
 	};
 };
 
-const obsidianFixed = window.i18next.getFixedT(null, "default");
+const obsidianFixed = window.i18next.getFixedT("", "default");
 export const obsidianText = (
 	key: NestedPaths<ObsidianDefaultText>,
 	variables?: Record<string, string>

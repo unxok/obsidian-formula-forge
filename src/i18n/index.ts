@@ -1,19 +1,14 @@
-import type { i18n } from "i18next";
 import en from "./languages/en.json";
 
 const ns = "formula-forge";
 
-// TODO idk why `addResourceBundle` isn't a known method anymore...
-type i18nCorrected = typeof window.i18next & i18n;
-const i18next = window.i18next as i18nCorrected;
-
 // add language packs below
 
-i18next.addResourceBundle("en", ns, en); // English
+window.i18next.addResourceBundle("en", ns, en); // English
 
 //////////////////
 
-const fixedT = window.i18next.getFixedT(null, ns);
+const fixedT = window.i18next.getFixedT("", ns);
 
 type EN = typeof en;
 
