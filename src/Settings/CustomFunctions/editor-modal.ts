@@ -226,4 +226,20 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 			});
 		});
 	}
+
+	override close(): void {
+		const { customFunction } = this;
+		const { parameters } = customFunction;
+
+		customFunction.parameters = parameters.map((p, i) => {
+			if (i === parameters.length - 1) {
+				return p;
+			}
+
+			// only the last param can be variadic
+			return { ...p, variadic: false };
+		});
+
+		super.close();
+	}
 }
