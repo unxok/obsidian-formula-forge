@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-formula-forge",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"description": "Render bases formulas in your notes, define global formulas, API for custom functions, and more formula-related features.",
 	"main": "main.js",
 	"scripts": {
@@ -9,7 +9,7 @@
 		"copy-manifest-to-vault": "cp manifest.json ../formula-forge-vault/.obsidian/plugins/formula-forge/manifest.json",
 		"build": "vite build && cp manifest.json dist/",
 		"version": "node version-bump.mjs && git add manifest.json versions.json",
-		"release": "git tag -a %npm_config_tag% -m '%npm_config_tag%' && git push origin %npm_config_tag%",
+		"release": "git tag -a $npm_config_tag -m '$npm_config_tag' && git push origin $npm_config_tag",
 		"test": "vitest",
 		"lint": "npx eslint src/ >> lint.log"
 	},

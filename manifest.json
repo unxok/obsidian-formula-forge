@@ -1,7 +1,7 @@
 {
 	"id": "formula-forge",
 	"name": "Formula Forge",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"minAppVersion": "1.12.7",
 	"description": "Render bases formulas in your notes, define global formulas, API for custom functions, and more formula-related features.",
 	"author": "Unxok",
