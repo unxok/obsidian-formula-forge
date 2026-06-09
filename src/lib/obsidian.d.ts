@@ -243,6 +243,14 @@ declare module "obsidian" {
 		data: Record<string, unknown>;
 	}
 
+	interface ErrorValue extends Value {
+		constructor: {
+			type: "Error";
+		};
+
+		message: string;
+	}
+
 	interface BasesEntry extends FormulaContext {
 		// new (ctx: BasesContext, file: TFile): BasesEntry;
 
