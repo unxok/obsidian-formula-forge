@@ -17,6 +17,9 @@
 	"author": "Unxok",
 	"license": "MIT",
 	"devDependencies": {
+		"@codemirror/language": "^6.12.3",
+		"@codemirror/state": "^6.6.0",
+		"@codemirror/view": "^6.43.1",
 		"@types/luxon": "3.4.2",
 		"@types/node": "22.7.4",
 		"esbuild": "0.25.5",
@@ -28,15 +31,12 @@
 		"rollup-plugin-copy": "^3.5.0",
 		"tslib": "2.7.0",
 		"typescript": "5.8.3",
-		"vite": "6.4.1",
+		"vite": "6.4.3",
 		"vite-bundle-analyzer": "1.2.1",
 		"vite-plugin-static-copy": "^3.1.6",
 		"vitest": "^4.0.16"
 	},
 	"dependencies": {
-		"@codemirror/language": "^6.12.3",
-		"@codemirror/state": "^6.6.0",
-		"@codemirror/view": "^6.38.6",
 		"monkey-around": "3.0.0",
 		"valibot": "^1.2.0"
 	}
