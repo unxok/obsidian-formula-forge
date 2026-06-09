@@ -12,6 +12,7 @@ import {
 	validateJsStyleVariable,
 } from "./utils";
 import { validateSetting } from "~/utils/obsidian";
+import { arrayMove } from "~/utils";
 
 export class CustomFunctionEditorModal extends ConfirmationModal {
 	public original: CustomFunction;
@@ -125,6 +126,14 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 		});
 
 		const paramsGroup = new ReorderSettingGroup(contentEl);
+		paramsGroup.onReorder((from, to) => {
+			customFunction.parameters = arrayMove(
+				customFunction.parameters,
+				from,
+				to
+			);
+			this.onOpen();
+		});
 		paramsGroup.setHeading("Parameters");
 		paramsGroup.addExtraButton((button) => {
 			button.setIcon("lucide-plus-circle");
