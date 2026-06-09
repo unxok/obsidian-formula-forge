@@ -5,46 +5,133 @@
 
 # Formula Forge
 
-> [!NOTE]
-> UNDER CONSTRUCTION
-
 Render bases formulas in your notes, define global formulas and functions, and more formula-related features.
+
+**Table of Contents:**
+
+- [Formula rendering](#formula-rendering)
+  - [Inline code](#inline-code)
+  - [Codeblock](#codeblock)
+- [Utilities](#utilities)
+  - [`md()`](#md)
+  - [`define()` / `Null.define()`](#define--nulldefine)
+  - [`then()` / `Null.then()`](#then--nullthen)
+- [Global formulas](#global-formulas)
+- [Custom functions](#custom-functions)
+  - [Global scope example](#global-scope-example)
+  - [Type scope example](#type-scope-example)
+- [API](#api)
+- [Templater integration](#templater-integration)
 
 ## Formula rendering
 
 You can render formulas in your notes in inline code or a codeblock.
 
+Both `this` and `file` refer to the current file which the formula is being rendered in.
+
+### Inline code
+
 By default, the inline code syntax is an equals sign. For example:
 
 ```
-`=2+2`
+`=this.file.name + 2`
 ```
+
+![inline rendering demo](https://raw.githubusercontent.com/unxok/obsidian-formula-forge/refs/heads/main/assets/inline-code-rendering-demo.gif)
+
+### Codeblock
 
 By default, the codeblock language is "bases-formula". For example:
 
 ````
-```bases-formula
-2+2
+```base-formula
+"Created: " + file.ctime
 ```
 ````
+
+![codeblock rendering demo](https://raw.githubusercontent.com/unxok/obsidian-formula-forge/refs/heads/main/assets/codeblock-rendering-demo.gif)
 
 With formula codeblocks, you can also add CSS classes by adding them after the codeblock language. For example:
 
 ````
-```bases-formula my-class my-other-class
-2+2
+```base-formula my-class my-other-class
+"Created: " + file.ctime
 ```
 ````
+
+## Utilities
+
+FF provides a few extra utility functions you can use in your formulas. More may be added in the future.
+
+### `md()`
+
+`md(input: number): html`
+
+- Converts a markdown srting into a code snippet that renders as HTML.
+- Example: `md("*italic*, **bold**, ~~strikethrough~~")`
+
+### `define()` / `Null.define()`
+
+`define(name: string, value: any): null`
+
+- Defines a local variable.
+- Typically used in conjunction with `then()`.
+- Example: `define(who, "world").then("Hello " + who + "!")` returns `"Hello world!"`.
+- It is also a function of the `Null` type, so it can be chained to define multiple variables.
+- Example: `define("num1", 6).define("num2", 7).then(num1 + num2)` returns `13`.
+
+### `then()` / `Null.then()`
+
+`then(any: Any...): any`
+
+- Evaluates every argument passed to it, but only returns the last argument provided.
+- Typically used in conjunction with `define()`.
+- Example: `then(define("foo", "bar"), "this string is ignored", foo)` returns `"bar"`.
+- It is also a function of the `Null` type, which is useful to chain on a `define()` call.
+- Example: `define(who, "world").then("Hello " + who + "!")` returns `"Hello world!"`.
 
 ## Global formulas
 
 In the plugin settings, you can define global formulas which can be accessed in any base or formula in your vault.
 
-![global formula demo](todo)
+These formulas are treated exactly the same as regular formula properties that you would define within a base, so they can be used within filters and as a property.
+
+![global formula demo](https://raw.githubusercontent.com/unxok/obsidian-formula-forge/refs/heads/main/assets/global-formula-demo.gif)
 
 ## Custom functions
 
 In the plugin settings, you can define custom functions which can accept typed parameters and be used in any base or formula in your vault.
+
+These functions can be defined in the global scope or as a function of a specific data type.
+
+You can copy the YAML for these examples and import them by selecting the
+three dots near the Custom functions setting and selecting `Import YAML`.
+
+### Global scope example
+
+```yaml
+name: formatDollars
+description: Converts a number into a string dollar amount
+scope: Global
+scopeType: Any
+parameters:
+  - name: num
+    type: Number
+    optional: false
+    variadic: false
+formula: '"$" + num.round(2)'
+```
+
+### Type scope example
+
+```yaml
+name: random
+description: Gets a random item from the list
+scope: Type
+scopeType: List
+parameters: []
+formula: self[(random() * self.length).floor()]
+```
 
 ## API
 
@@ -65,7 +152,7 @@ api.on("ready", () => {
 // evaluate a formula
 const output = api.evaluateFormula(
 	"this.file.path", // the formula to eval
-	app.vault.getFileByPath("path/to/note.md") // the file to use as `this`
+	"path/to/note.md" // the file to use as `this` and `file`
 );
 
 // render formula output to the DOM
@@ -74,4 +161,33 @@ output.renderTo(myEl, app.renderContext);
 // get the actual value of a formula's output
 const raw = api.normalizeFormulaValue(output);
 typeof raw === "string"; // true
+```
+
+## Templater integration
+
+To use formulas in templater syntax, add the following as a user script:
+
+```js
+// path/to/user-scripts/formula.js
+
+/**
+ * Evaluates a formula
+ * @param {string} formula - The formula to evaluate
+ * @param {string | TFile | undefined} file - The file to evaulate this formula in the context of. You only need to pass this if using the "this" or "file" keywords.
+ * @returns The formula output
+ */
+function evaluateFormula(formula, file) {
+	const { api } = app.plugins.plugins["formula-forge"];
+	return api.evaluateFormula(formula, file).toString();
+}
+
+module.exports = evaluateFormula;
+```
+
+Example templater syntax:
+
+```
+<% tp.user.formula("2 + 2") %>
+
+<% tp.user.formula(`"Created: " + file.ctime`, tp.config.target_file) %>
 ```
