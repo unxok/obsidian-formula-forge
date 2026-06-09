@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/unxok/obsidian-formula-forge/blob/main/assets/formula-forge.png" />
+  <img src="https://raw.githubusercontent.com/unxok/obsidian-formula-forge/refs/heads/main/assets/formula-forge.png" />
 </p>
 <br />
 
