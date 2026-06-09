@@ -13,7 +13,7 @@ Render bases formulas in your notes, define global formulas and functions, and m
   - [Inline code](#inline-code)
   - [Codeblock](#codeblock)
 - [Utilities](#utilities)
-- [`files()`](#files)
+  - [`files()`](#files)
   - [`md()`](#md)
   - [`define()` / `Null.define()`](#define--nulldefine)
   - [`then()` / `Null.then()`](#then--nullthen)
@@ -64,7 +64,7 @@ With formula codeblocks, you can also add CSS classes by adding them after the c
 
 FF provides a few extra utility functions you can use in your formulas. More may be added in the future.
 
-## `files()`
+### `files()`
 
 `files(): List`
 
