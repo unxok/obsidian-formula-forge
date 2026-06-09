@@ -157,7 +157,11 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 				let name = "myFunction";
 				let i = 1;
 				while (
-					this.plugin.getSettings().customFunctions.find((f) => f.name === name)
+					this.plugin
+						.getSettings()
+						.customFunctions.find(
+							(f) => f.name.toLowerCase() === name.toLowerCase()
+						)
 				) {
 					name = "myFunction" + i;
 					i++;
