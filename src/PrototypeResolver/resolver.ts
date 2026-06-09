@@ -176,7 +176,11 @@ export class PrototypeResolver extends Component {
 				typeof formula === "string"
 					? plugin.api.createFormula(formula)
 					: formula;
-			const context = createBasesContext(containingFile);
+			const file =
+				typeof containingFile === "string"
+					? plugin.app.vault.getFileByPath(containingFile) ?? undefined
+					: containingFile;
+			const context = createBasesContext(file);
 			return formulaInstance.getValue(context.local);
 		};
 	}

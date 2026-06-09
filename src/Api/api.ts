@@ -61,7 +61,7 @@ export class Api extends Events {
 	 */
 	evaluateFormula = (
 		formula: string | BasesFormula,
-		containingFile?: TFile
+		containingFile?: TFile | string
 	): Value => {
 		void formula;
 		void containingFile;
