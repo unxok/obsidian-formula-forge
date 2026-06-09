@@ -10,8 +10,10 @@
 	"errors": {
 		"parsing": "Parsing error:\n{{error}}",
 		"lastParamVariadic": "Only the last parameter may be variadic.",
-		"funcAlreadyExists": "Function \"{{function}}\" already exists.",
-		"jsStyleVariableName": "Cannot start with a number and may only contain letters, numbers, _, and $."
+		"duplicateFunctionName": "Function \"{{function}}\" already exists.",
+		"duplicateGlobalFormulaName": "Global formula \"{{formula}}\" already exists.",
+		"jsStyleVariableName": "Cannot start with a number and may only contain letters, numbers, _, and $.",
+		"notEmpty": "Cannot be empty"
 	},
 	"settings": {
 		"formulaRendering": {
@@ -31,6 +33,12 @@
 			"deleteModal": {
 				"title": "Confirm deletion",
 				"warning": "This will permanently delete the global formula named \"{{name}}\""
+			},
+			"deleteAllLabel": "Delete all",
+			"deleteAllModal": {
+				"title": "Confirm deletion",
+				"desc": "This will permanently delete all global formulas.",
+				"confirmLabel": "Delete all"
 			},
 			"editorModal": {
 				"title": "Edit global formula",
@@ -119,8 +127,7 @@
 					"desc": "Syntax reference",
 					"placeholder": "x + y"
 				}
-			},
-			"errors": {}
+			}
 		}
 	}
 }
