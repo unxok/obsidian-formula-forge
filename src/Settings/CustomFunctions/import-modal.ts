@@ -3,10 +3,12 @@ import { ConfirmationModal } from "~/common/ConfirmationModal";
 import { syncTryCatch, TryCatchResult } from "~/utils";
 import { formulaForgeSettingsSchema } from "../schema";
 import * as v from "valibot";
-import { validateSetting } from "~/utils/obsidian";
+import {
+	validateSetting,
+	validateFormula as validateFormulaUtil,
+} from "~/utils/obsidian";
 import {
 	validateDuplicateFunctionName,
-	validateFormula as validateFormulaUtil,
 	validateJsStyleVariable,
 } from "./utils";
 import { FormulaForge } from "~/Plugin";

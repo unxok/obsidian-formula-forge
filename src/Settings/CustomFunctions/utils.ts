@@ -45,7 +45,7 @@ export const validateDuplicateFunctionName = (
 
 	const isGlobal = scope === "Global";
 	const scopedName = `${isGlobal ? "" : scopeType + "."}${name}`;
-	const error = t("errors.funcAlreadyExists", { function: scopedName });
+	const error = t("errors.duplicateFunctionName", { function: scopedName });
 
 	const result = plugin.api.evaluateFormula(
 		`${isGlobal ? "" : defaultValueMapping[scopeType] + "."}${name}()`
@@ -99,19 +99,4 @@ export const validateDuplicateFunctionName = (
 		data: undefined,
 		error,
 	};
-};
-
-export const validateFormula = (
-	plugin: FormulaForge,
-	text: string
-): TryCatchResult<void> => {
-	const { formula } = plugin.api.createFormula(text);
-	if (formula.type === "invalid") {
-		return {
-			success: false,
-			data: undefined,
-			error: formula.getErrorMessage(),
-		};
-	}
-	return { success: true, data: undefined, error: undefined };
 };

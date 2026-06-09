@@ -8,10 +8,9 @@ import {
 	CustomFunction,
 	Param,
 	validateDuplicateFunctionName,
-	validateFormula,
 	validateJsStyleVariable,
 } from "./utils";
-import { validateSetting } from "~/utils/obsidian";
+import { validateFormula, validateSetting } from "~/utils/obsidian";
 import { arrayMove } from "~/utils";
 
 export class CustomFunctionEditorModal extends ConfirmationModal {
