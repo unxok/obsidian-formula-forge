@@ -78,9 +78,20 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 						subItem.onClick(async () => {
 							await this.plugin.updateSettings((prev) => ({
 								...prev,
-								customFunctions: prev.customFunctions.toSorted((a, b) =>
-									a.name.localeCompare(b.name)
-								),
+								customFunctions: prev.customFunctions.toSorted((a, b) => {
+									const aIsGlobal = a.scope === "Global";
+									const bIsGlobal = b.scope === "Global";
+
+									// sort global first
+									if (aIsGlobal !== bIsGlobal) {
+										return aIsGlobal ? -1 : 1;
+									}
+
+									const aName = aIsGlobal ? a.name : `${a.scopeType}.${a.name}`;
+									const bName = bIsGlobal ? b.name : `${b.scopeType}.${b.name}`;
+
+									return aName.localeCompare(bName);
+								}),
 							}));
 							this.reRenderTab();
 						});
@@ -90,9 +101,20 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 						subItem.onClick(async () => {
 							await this.plugin.updateSettings((prev) => ({
 								...prev,
-								customFunctions: prev.customFunctions.toSorted((a, b) =>
-									b.name.localeCompare(a.name)
-								),
+								customFunctions: prev.customFunctions.toSorted((a, b) => {
+									const aIsGlobal = a.scope === "Global";
+									const bIsGlobal = b.scope === "Global";
+
+									// sort global first
+									if (aIsGlobal !== bIsGlobal) {
+										return aIsGlobal ? -1 : 1;
+									}
+
+									const aName = aIsGlobal ? a.name : `${a.scopeType}.${a.name}`;
+									const bName = bIsGlobal ? b.name : `${b.scopeType}.${b.name}`;
+
+									return bName.localeCompare(aName);
+								}),
 							}));
 							this.reRenderTab();
 						});
