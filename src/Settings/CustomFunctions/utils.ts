@@ -3,6 +3,7 @@ import { FormulaForgeSettings } from "../schema";
 import { FormulaForge } from "~/Plugin";
 import { ErrorValue } from "obsidian";
 import { obsidianText } from "~/i18n/obsidian";
+import { t } from "~/i18n";
 
 export type CustomFunction = FormulaForgeSettings["customFunctions"][number];
 export type Param = CustomFunction["parameters"][number];
@@ -45,7 +46,7 @@ export const validateDuplicateFunctionName = (
 
 	const isGlobal = scope === "Global";
 	const scopedName = `${isGlobal ? "" : scopeType + "."}${name}`;
-	const error = `Function "${scopedName}" already exists`;
+	const error = t("errors.funcAlreadyExists", { function: scopedName });
 
 	const result = plugin.api.evaluateFormula(
 		`${isGlobal ? "" : defaultValueMapping[scopeType] + "."}${name}()`

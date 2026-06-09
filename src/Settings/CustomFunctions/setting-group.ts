@@ -48,7 +48,7 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 				menu.addSections(["", "danger"]);
 				menu.addItem((item) => {
 					item.setIcon("lucide-import");
-					item.setTitle("Import YAML");
+					item.setTitle(t("settings.customFunctions.importLabel"));
 					item.onClick(() => {
 						const modal = new CustomFunctionImportModal(this.plugin);
 						modal.onClose = () => {
@@ -70,11 +70,11 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 				});
 				menu.addItem((item) => {
 					item.setIcon("lucide-sort-asc");
-					item.setTitle("Sort");
+					item.setTitle(t("common.sort"));
 					const submenu = item.setSubmenu();
 					submenu.setNoIcon();
 					submenu.addItem((subItem) => {
-						subItem.setTitle(`${"A to Z"}`);
+						subItem.setTitle(t("common.aToZ"));
 						subItem.onClick(async () => {
 							await this.plugin.updateSettings((prev) => ({
 								...prev,
@@ -86,7 +86,7 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 						});
 					});
 					submenu.addItem((subItem) => {
-						subItem.setTitle(`${"Z to A"}`);
+						subItem.setTitle(t("common.zToA"));
 						subItem.onClick(async () => {
 							await this.plugin.updateSettings((prev) => ({
 								...prev,
@@ -101,14 +101,16 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 				menu.addItem((item) => {
 					item.setSection("danger");
 					item.setWarning(true);
-					item.setTitle("Delete all");
+					item.setTitle(t("settings.customFunctions.deleteAllLabel"));
 					item.setIcon("lucide-trash-2");
 					item.onClick(() => {
 						confirm({
 							app: this.plugin.app,
-							title: "Confirm deletion",
-							desc: "This will permanently delete all custom functions.",
-							confirmLabel: "Delete all",
+							title: t("settings.customFunctions.deleteAllModal.title"),
+							desc: t("settings.customFunctions.deleteAllModal.desc"),
+							confirmLabel: t(
+								"settings.customFunctions.deleteAllModal.confirmLabel"
+							),
 							onClose: async (isConfirmed) => {
 								if (!isConfirmed) return;
 								await this.plugin.updateSettings((prev) => ({
@@ -177,7 +179,7 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 		s.setDesc(customFunction.description);
 		s.addExtraButton((button) => {
 			button.setIcon("lucide-settings");
-			button.setTooltip("Edit");
+			button.setTooltip(t("common.edit"));
 			button.onClick(() => {
 				const modal = new CustomFunctionEditorModal(this.plugin, {
 					...customFunction,
@@ -197,16 +199,16 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 		});
 		s.addExtraButton((button) => {
 			button.setIcon("lucide-copy");
-			button.setTooltip("Copy YAML");
+			button.setTooltip(t("settings.customFunctions.copyYamlTooltip"));
 			button.onClick(async () => {
 				const yaml = stringifyYaml(customFunction);
 				await navigator.clipboard.writeText(yaml);
-				new window.Notice("Copied function as YAML");
+				new window.Notice(t("settings.customFunctions.copyYamlNotice"));
 			});
 		});
 		s.addExtraButton((button) => {
 			button.setIcon("lucide-x");
-			button.setTooltip("Delete");
+			button.setTooltip(t("common.delete"));
 			button.onClick(() => {
 				confirm({
 					app: this.plugin.app,

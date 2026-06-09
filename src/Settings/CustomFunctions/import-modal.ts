@@ -11,6 +11,7 @@ import {
 } from "./utils";
 import { FormulaForge } from "~/Plugin";
 import "./index.css";
+import { t } from "~/i18n";
 
 export class CustomFunctionImportModal extends ConfirmationModal {
 	constructor(public plugin: FormulaForge) {
@@ -23,7 +24,7 @@ export class CustomFunctionImportModal extends ConfirmationModal {
 	public functionDefinition: v.InferOutput<typeof this.schema> | null = null;
 
 	onOpen(): void | Promise<void> {
-		this.setTitle("Import custom function as YAML");
+		this.setTitle(t("settings.customFunctions.importModal.title"));
 		const textarea = new TextAreaComponent(this.contentEl);
 		textarea.inputEl.setAttrs({
 			cols: "30",
@@ -36,7 +37,7 @@ export class CustomFunctionImportModal extends ConfirmationModal {
 		const validate = validateSetting(errorEl);
 
 		this.addFooterButton((button) => {
-			button.setButtonText("Save");
+			button.setButtonText(t("common.save"));
 			button.setDisabled(true);
 			button.onClick(() => {
 				if (!this.functionDefinition) return;
@@ -50,7 +51,7 @@ export class CustomFunctionImportModal extends ConfirmationModal {
 				errorEl.empty();
 
 				if (!result.success) {
-					errorEl.appendText("Parsing error:\n" + result.error);
+					errorEl.appendText(t("errors.parsing", { error: result.error }));
 					return;
 				}
 
@@ -96,7 +97,7 @@ export class CustomFunctionImportModal extends ConfirmationModal {
 							return {
 								success: false,
 								data: undefined,
-								error: `parameter[${i}].name: Only the last parameter may be variadic`,
+								error: `parameter[${i}].name: ${t("errors.lastParamVariadic")}`,
 							};
 						}
 						return {

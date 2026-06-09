@@ -33,7 +33,11 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 		const { contentEl, customFunction, plugin } = this;
 		this.contentEl.empty();
 		// this.setTitle(t("settings.customFunctions.editorModal.title"));
-		this.setTitle(this.isNew ? "Create function" : "Edit function");
+		this.setTitle(
+			this.isNew
+				? t("settings.customFunctions.editorModal.addTitle")
+				: t("settings.customFunctions.editorModal.editTitle")
+		);
 
 		const infoGroup = new SettingGroup(contentEl);
 		infoGroup.addSetting((s) => {
@@ -72,13 +76,17 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 			});
 		});
 		infoGroup.addSetting((s) => {
-			s.setName("Scope");
+			s.setName(t("settings.customFunctions.editorModal.scope.name"));
 			s.setDesc(
 				window.createFragment((frag) => {
-					frag.appendText("Global - call directly by name: ");
+					frag.appendText(
+						t("settings.customFunctions.editorModal.scope.globalDesc")
+					);
 					frag.createEl("code", { text: `${"myFunc()"}` });
 					frag.createEl("br");
-					frag.appendText("Type - call as a function of the specified type: ");
+					frag.appendText(
+						t("settings.customFunctions.editorModal.scope.typeDesc")
+					);
 					frag.createEl("code", { text: `${"67.myFunc()"}` });
 				})
 			);
@@ -100,10 +108,8 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 				s.settingEl.remove();
 				return;
 			}
-			s.setName("Scope type");
-			s.setDesc(
-				'The data type to scope this function to. Use the implicit parameter "self" in the function\'s formula definition to refer to the value the function is being called on.'
-			);
+			s.setName(t("settings.customFunctions.editorModal.scopeType.name"));
+			s.setDesc(t("settings.customFunctions.editorModal.scopeType.desc"));
 			s.addDropdown((dropdown) => {
 				dropdown.addOptions({
 					Any: "Any",
@@ -134,10 +140,16 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 			);
 			this.onOpen();
 		});
-		paramsGroup.setHeading("Parameters");
+		paramsGroup.setHeading(
+			t("settings.customFunctions.editorModal.parameters.name")
+		);
 		paramsGroup.addExtraButton((button) => {
 			button.setIcon("lucide-plus-circle");
-			button.setTooltip("Add parameter");
+			button.setTooltip(
+				t(
+					"settings.customFunctions.editorModal.parameters.editorModal.addTooltip"
+				)
+			);
 			button.onClick(() => {
 				let name = "myParam";
 				let i = 1;
@@ -167,15 +179,26 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 					window.createFragment((frag) => {
 						frag.appendText(param.type);
 						if (param.optional) {
-							frag.appendText("  • Optional");
+							frag.appendText(
+								` • ${t(
+									"settings.customFunctions.editorModal.parameters.editorModal.optional.name"
+								)}`
+							);
 						}
 						if (param.variadic) {
-							frag.appendText("  • Variadic");
+							frag.appendText(
+								` • ${t(
+									"settings.customFunctions.editorModal.parameters.editorModal.variadic.name"
+								)}`
+							);
 						}
 					})
 				);
 				s.addExtraButton((button) => {
 					button.setIcon("lucide-settings");
+					button.setTooltip(
+						t("settings.customFunctions.editorModal.parameters.editLabel")
+					);
 					button.onClick(() => {
 						const paramModal = new ParameterModal(param, plugin.app);
 						paramModal.onClose = () => {
@@ -187,6 +210,9 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 				});
 				s.addExtraButton((button) => {
 					button.setIcon("lucide-x");
+					button.setTooltip(
+						t("settings.customFunctions.editorModal.parameters.removeLabel")
+					);
 					button.onClick(() => {
 						customFunction.parameters = customFunction.parameters.filter(
 							(_, i2) => i2 !== i

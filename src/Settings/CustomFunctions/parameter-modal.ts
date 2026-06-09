@@ -1,6 +1,7 @@
 import { Modal, App, SettingGroup } from "obsidian";
 import { Param, validateJsStyleVariable } from "./utils";
 import { validateSetting } from "~/utils/obsidian";
+import { t } from "~/i18n";
 
 export class ParameterModal extends Modal {
 	original: Param;
@@ -13,14 +14,28 @@ export class ParameterModal extends Modal {
 		const { contentEl, param } = this;
 
 		contentEl.empty();
-		this.setTitle(this.isNew ? "Add parameter" : "Edit parameter");
+		this.setTitle(
+			this.isNew
+				? t(
+						"settings.customFunctions.editorModal.parameters.editorModal.addTitle"
+				  )
+				: t(
+						"settings.customFunctions.editorModal.parameters.editorModal.editTitle"
+				  )
+		);
 
 		const group = new SettingGroup(contentEl);
 		group.addSetting((s) => {
 			const validate = validateSetting(s);
-			s.setName("Name");
+			s.setName(
+				t(
+					"settings.customFunctions.editorModal.parameters.editorModal.name.name"
+				)
+			);
 			s.setDesc(
-				"The name to refer to this parameter within this function's formula definition."
+				t(
+					"settings.customFunctions.editorModal.parameters.editorModal.name.desc"
+				)
 			);
 			s.addText((text) => {
 				text.setValue(param.name);
@@ -35,8 +50,16 @@ export class ParameterModal extends Modal {
 			});
 		});
 		group.addSetting((s) => {
-			s.setName("Type");
-			s.setDesc(`The data type of this parameter.`);
+			s.setName(
+				t(
+					"settings.customFunctions.editorModal.parameters.editorModal.type.name"
+				)
+			);
+			s.setDesc(
+				t(
+					"settings.customFunctions.editorModal.parameters.editorModal.type.desc"
+				)
+			);
 			s.addDropdown((dropdown) => {
 				dropdown.addOptions({
 					Any: "Any",
@@ -58,9 +81,15 @@ export class ParameterModal extends Modal {
 			});
 		});
 		group.addSetting((s) => {
-			s.setName("Optional");
+			s.setName(
+				t(
+					"settings.customFunctions.editorModal.parameters.editorModal.optional.name"
+				)
+			);
 			s.setDesc(
-				"If true, the parameter is not required to be passed when calling this function and should be treated as possibly undefined in the function's formula definition."
+				t(
+					"settings.customFunctions.editorModal.parameters.editorModal.optional.desc"
+				)
 			);
 			s.addToggle((toggle) => {
 				toggle.setValue(param.optional);
@@ -70,9 +99,15 @@ export class ParameterModal extends Modal {
 			});
 		});
 		group.addSetting((s) => {
-			s.setName("Variadic");
+			s.setName(
+				t(
+					"settings.customFunctions.editorModal.parameters.editorModal.variadic.name"
+				)
+			);
 			s.setDesc(
-				`This may only be set to true if it's the last parameter. If true, multiple values may be provided for the parameter and should be treated as a ${"List"} in the function's formula definition.`
+				t(
+					"settings.customFunctions.editorModal.parameters.editorModal.variadic.desc"
+				)
 			);
 			s.addToggle((toggle) => {
 				toggle.setValue(param.variadic);
