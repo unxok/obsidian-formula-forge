@@ -25,7 +25,7 @@ Render bases formulas in your notes, define global formulas and functions, and m
 
 ## Formula rendering
 
-You can render formulas in your notes in inline code or a codeblock.
+You can render formulas in your notes in inline code or a codeblock. These formulas will automatically re-render when metadata changes.
 
 Both `this` and `file` refer to the current file which the formula is being rendered in.
 
@@ -41,7 +41,7 @@ By default, the inline code syntax is an equals sign. For example:
 
 ### Codeblock
 
-By default, the codeblock language is "bases-formula". For example:
+By default, the codeblock language is `base-formula`. For example:
 
 ````
 ```base-formula
@@ -167,9 +167,9 @@ typeof raw === "string"; // true
 
 To use formulas in templater syntax, add the following as a user script:
 
-```js
-// path/to/user-scripts/formula.js
+`path/to/user-scripts/formula.js`
 
+```js
 /**
  * Evaluates a formula
  * @param {string} formula - The formula to evaluate
