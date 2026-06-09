@@ -15,8 +15,7 @@ export const validateJsStyleVariable = (str: string): TryCatchResult<void> => {
 		return {
 			success: false,
 			data: undefined,
-			error:
-				"Cannot start with a number and may only contain letters, numbers, _, and $.",
+			error: t("errors.jsStyleVariableName"),
 		};
 	}
 	return {

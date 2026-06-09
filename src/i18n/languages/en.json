@@ -10,7 +10,8 @@
 	"errors": {
 		"parsing": "Parsing error:\n{{error}}",
 		"lastParamVariadic": "Only the last parameter may be variadic.",
-		"funcAlreadyExists": "Function \"{{function}}\" already exists."
+		"funcAlreadyExists": "Function \"{{function}}\" already exists.",
+		"jsStyleVariableName": "Cannot start with a number and may only contain letters, numbers, _, and $."
 	},
 	"settings": {
 		"formulaRendering": {
