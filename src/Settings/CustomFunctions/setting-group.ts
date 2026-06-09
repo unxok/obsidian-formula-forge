@@ -45,6 +45,7 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 			button.setIcon("lucide-more-horizontal");
 			button.extraSettingsEl.addEventListener("click", (e) => {
 				const menu = new Menu();
+				menu.addSections(["", "danger"]);
 				menu.addItem((item) => {
 					item.setIcon("lucide-import");
 					item.setTitle("Import YAML");
@@ -94,6 +95,28 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 								),
 							}));
 							this.reRenderTab();
+						});
+					});
+				});
+				menu.addItem((item) => {
+					item.setSection("danger");
+					item.setWarning(true);
+					item.setTitle("Delete all");
+					item.setIcon("lucide-trash-2");
+					item.onClick(() => {
+						confirm({
+							app: this.plugin.app,
+							title: "Confirm deletion",
+							desc: "This will permanently delete all custom functions.",
+							confirmLabel: "Delete all",
+							onClose: async (isConfirmed) => {
+								if (!isConfirmed) return;
+								await this.plugin.updateSettings((prev) => ({
+									...prev,
+									customFunctions: [],
+								}));
+								this.reRenderTab();
+							},
 						});
 					});
 				});
