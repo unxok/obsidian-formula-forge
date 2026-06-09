@@ -1,10 +1,21 @@
-import { TextAreaComponent, setIcon, parseYaml } from "obsidian";
+import { TextAreaComponent, parseYaml } from "obsidian";
 import { ConfirmationModal } from "~/common/ConfirmationModal";
-import { syncTryCatch } from "~/utils";
+import { syncTryCatch, TryCatchResult } from "~/utils";
 import { formulaForgeSettingsSchema } from "../schema";
 import * as v from "valibot";
+import { validateSetting } from "~/utils/obsidian";
+import {
+	validateDuplicateFunctionName,
+	validateFormula as validateFormulaUtil,
+	validateJsStyleVariable,
+} from "./utils";
+import { FormulaForge } from "~/Plugin";
+import "./index.css";
 
 export class CustomFunctionImportModal extends ConfirmationModal {
+	constructor(public plugin: FormulaForge) {
+		super(plugin.app);
+	}
 	private schema =
 		formulaForgeSettingsSchema.wrapped.entries.customFunctions.wrapped.item;
 
@@ -14,13 +25,16 @@ export class CustomFunctionImportModal extends ConfirmationModal {
 	onOpen(): void | Promise<void> {
 		this.setTitle("Import custom function as YAML");
 		const textarea = new TextAreaComponent(this.contentEl);
-		const validationEl = this.contentEl.createDiv({
-			cls: "formula-forge--valibort-errors-container",
+		textarea.inputEl.setAttrs({
+			cols: "30",
+			rows: "15",
 		});
-		const validationIconEl = validationEl.createDiv({
-			cls: "status-icon",
+
+		const errorEl = this.contentEl.createDiv({
+			cls: "formula-forge--import-custom-function-error-container mod-warning",
 		});
-		const validationLabelEl = validationEl.createSpan();
+		const validate = validateSetting(errorEl);
+
 		this.addFooterButton((button) => {
 			button.setButtonText("Save");
 			button.setDisabled(true);
@@ -33,19 +47,63 @@ export class CustomFunctionImportModal extends ConfirmationModal {
 				const result = this.tryParse(v);
 				this.functionDefinition = result.success ? result.data : null;
 				button.setDisabled(!result.success);
-				validationEl.classList[result.success ? "remove" : "add"](
-					"mod-warning"
-				);
-				setIcon(
-					validationIconEl,
-					result.success ? "lucide-check-circle" : "lucide-x-circle"
-				);
-				validationLabelEl.textContent = result.success
-					? "Valid function definition"
-					: result.error;
-				validationEl.setText(
-					result.success ? "Valid function definition" : result.error
-				);
+				errorEl.empty();
+
+				if (!result.success) {
+					errorEl.appendText("Parsing error:\n" + result.error);
+					return;
+				}
+
+				const { data } = result;
+
+				const validateName = (): TryCatchResult<void> => {
+					const jsResult = validateJsStyleVariable(data.name);
+					if (!jsResult.success) {
+						jsResult.error = `name: ${jsResult.error}`;
+						return jsResult;
+					}
+
+					const duplicateResult = validateDuplicateFunctionName(
+						this.plugin,
+						data
+					);
+					if (!duplicateResult.success) {
+						duplicateResult.error = `name: ${duplicateResult.error}`;
+						return duplicateResult;
+					}
+
+					return {
+						success: true,
+						data: undefined,
+						error: undefined,
+					};
+				};
+
+				const validateParams = (): TryCatchResult<void>[] => {
+					return data.parameters.map((p, i) => {
+						const result = validateJsStyleVariable(p.name);
+						if (!result.success) {
+							result.error = `parameter[${i}].name: ${result.error}`;
+						}
+						return result;
+					});
+				};
+
+				const validateFormula = (): TryCatchResult<void> => {
+					const result = validateFormulaUtil(this.plugin, data.formula);
+					if (!result.success) {
+						result.error = `formula: ${result.error}`;
+					}
+					return result;
+				};
+
+				const isValid = validate([
+					validateName(),
+					...validateParams(),
+					validateFormula(),
+				]);
+
+				button.setDisabled(!isValid);
 			});
 		});
 	}

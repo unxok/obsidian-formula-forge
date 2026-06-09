@@ -50,7 +50,7 @@ export class CustomFunctionsSettingGroup extends ReorderSettingGroup {
 					item.setIcon("lucide-import");
 					item.setTitle("Import YAML");
 					item.onClick(() => {
-						const modal = new CustomFunctionImportModal(this.plugin.app);
+						const modal = new CustomFunctionImportModal(this.plugin);
 						modal.onClose = () => {
 							const { shouldSave, functionDefinition } = modal;
 							if (!shouldSave || !functionDefinition) return;

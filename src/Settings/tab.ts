@@ -5,7 +5,6 @@ import { FormulaForge } from "~/Plugin";
 import { FormulaForgeSettings } from "./schema";
 import { arrayMove } from "~/utils";
 import { t } from "~/i18n";
-import "./index.css";
 import { CustomFunctionsSettingGroup } from "./CustomFunctions/setting-group";
 
 export class FormulaForgeSettingTab extends PluginSettingTab {
