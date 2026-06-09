@@ -79,13 +79,31 @@ export class CustomFunctionImportModal extends ConfirmationModal {
 					};
 				};
 
-				const validateParams = (): TryCatchResult<void>[] => {
+				const validateParamNames = (): TryCatchResult<void>[] => {
 					return data.parameters.map((p, i) => {
 						const result = validateJsStyleVariable(p.name);
 						if (!result.success) {
 							result.error = `parameter[${i}].name: ${result.error}`;
 						}
 						return result;
+					});
+				};
+
+				const validateParamVariadics = (): TryCatchResult<void>[] => {
+					return data.parameters.map((p, i) => {
+						const isLast = i === data.parameters.length - 1;
+						if (!isLast && p.variadic) {
+							return {
+								success: false,
+								data: undefined,
+								error: `parameter[${i}].name: Only the last parameter may be variadic`,
+							};
+						}
+						return {
+							success: true,
+							data: undefined,
+							error: undefined,
+						};
 					});
 				};
 
@@ -99,7 +117,8 @@ export class CustomFunctionImportModal extends ConfirmationModal {
 
 				const isValid = validate([
 					validateName(),
-					...validateParams(),
+					...validateParamNames(),
+					...validateParamVariadics(),
 					validateFormula(),
 				]);
 
