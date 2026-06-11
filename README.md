@@ -2,14 +2,14 @@
   <img src="https://raw.githubusercontent.com/unxok/obsidian-formula-forge/refs/heads/main/assets/formula-forge.png" />
 </p>
 <br />
-<div>
+<p align="center">
 	<img alt="GitHub Tag" src="https://img.shields.io/github/v/tag/unxok/obsidian-formula-forge?label=version">
 	<img alt="GitHub Downloads (specific asset, latest release)" src="https://img.shields.io/github/downloads/unxok/obsidian-formula-forge/latest/main.js?displayAssetName=false&label=downloads%20(latest)">
 	<img alt="Obsidian version" src="https://img.shields.io/github/manifest-json/minAppVersion/unxok/obsidian-formula-forge?label=Obsidian&color=%23882fa8">
 	<img alt="GitHub License" src="https://img.shields.io/github/license/unxok/obsidian-formula-forge">
 	<a href="https://buymeacoffee.com/unxok"><img alt="Static Badge" src="https://img.shields.io/badge/buy%20me%20a%20coffee-%23FFDD00?logo=buymeacoffee&logoColor=%231c1c1c">
 </a>
-</div>
+</p>
 
 # Formula Forge
 
