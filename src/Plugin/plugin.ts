@@ -51,8 +51,10 @@ export class FormulaForge extends Plugin {
 			this.addChild(this.rendererManager);
 			this.registerCustomFunctions();
 
-			if (!this.app.workspace.layoutReady) return;
-			this.rebuildLeaves({ bases: true, formulas: true });
+			if (this.app.workspace.layoutReady) {
+				this.rebuildLeaves({ bases: true, formulas: true });
+			}
+			this.handleSettingsChange(this.getSettings(), this.getSettings());
 		});
 	}
 
