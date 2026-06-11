@@ -37,7 +37,7 @@ release. Some specific details may be omitted for brevity.
 
 ### No longer broken
 
-- Fixed: ...
+- Fixed: The global scope version of `then()` now behaves as expected when only one parameter is provided.
 
 ### Developers
 

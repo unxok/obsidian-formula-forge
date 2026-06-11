@@ -246,7 +246,7 @@ export class FormulaForge extends Plugin {
 			ctx: null,
 			docString: () => "Returns the last of all the provided values.",
 			params: [{ name: "values", type: [AnyValue], variadic: true }],
-			applyWithContext(_ctx, _self, ...values) {
+			applyWithContext(_ctx, ...values) {
 				return values.pop() ?? NullValue.value;
 			},
 		});
