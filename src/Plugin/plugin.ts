@@ -9,6 +9,7 @@ import {
 	MarkdownRenderer,
 	Notice,
 	NullValue,
+	NumberValue,
 	Plugin,
 	PluginManifest,
 	StringValue,
@@ -22,7 +23,7 @@ import { Api } from "~/Api";
 import { FormulaForgeSettingTab } from "~/Settings/tab";
 import { RendererManager } from "~/RendererManager";
 import { around } from "monkey-around";
-import { AnyValue } from "~/utils";
+import { AnyValue, hash32, mulberry32 } from "~/utils";
 
 export class FormulaForge extends Plugin {
 	prototypeResolver: PrototypeResolver;
@@ -355,6 +356,25 @@ export class FormulaForge extends Plugin {
 				};
 
 				return value;
+			},
+		});
+
+		this.registerGlobalFunc({
+			name: "stableRandom",
+			ctx: null,
+			docString: () =>
+				"Returns a random number between 0 and 1 that is consistent per the provided `seed` parameter.",
+			params: [
+				{
+					name: "seed",
+					type: [AnyValue],
+				},
+			],
+			applyWithContext: (_ctx, seed): NumberValue => {
+				const str = seed.toString();
+				const hash = hash32(str);
+				const num = mulberry32(hash);
+				return new NumberValue(num);
 			},
 		});
 	}
