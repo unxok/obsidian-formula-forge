@@ -38,6 +38,6 @@
 	},
 	"dependencies": {
 		"monkey-around": "3.0.0",
-		"valibot": "^1.2.0"
+		"valibot": "1.2.0"
 	}
 }
