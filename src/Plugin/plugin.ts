@@ -243,23 +243,23 @@ export class FormulaForge extends Plugin {
 		this.registerGlobalFunc({
 			name: "then",
 			ctx: null,
-			docString: () => "Returns the last of all the provided parameters.",
-			params: [{ name: "any", type: [AnyValue], variadic: true }],
-			applyWithContext(_ctx, _self, ...any) {
-				return any.pop() ?? NullValue.value;
+			docString: () => "Returns the last of all the provided values.",
+			params: [{ name: "values", type: [AnyValue], variadic: true }],
+			applyWithContext(_ctx, _self, ...values) {
+				return values.pop() ?? NullValue.value;
 			},
 		});
 
 		this.registerInstanceFunc(NullValue, {
 			name: "then",
 			ctx: null,
-			docString: () => "Returns the last of all the provided parameters.",
+			docString: () => "Returns the last of all the provided values.",
 			params: [
 				{ name: "self", type: [NullValue] },
-				{ name: "any", type: [AnyValue], variadic: true },
+				{ name: "values", type: [AnyValue], variadic: true },
 			],
-			applyWithContext(_ctx, _self, ...any) {
-				return any.pop() ?? NullValue.value;
+			applyWithContext(_ctx, _self, ...values) {
+				return values.pop() ?? NullValue.value;
 			},
 		});
 

@@ -74,7 +74,7 @@ FF provides a few extra utility functions you can use in your formulas. More may
 
 ### `files()`
 
-`files(): List`
+`files(): list`
 
 - Gets all files in the vault
 - Example: `files().filter(value.inFolder("myFolder"))`.
@@ -98,9 +98,9 @@ FF provides a few extra utility functions you can use in your formulas. More may
 
 ### `then()` / `Null.then()`
 
-`then(any: Any...): any`
+`then(values: any...): any`
 
-- Returns the last of all the provided parameters.
+- Returns the last of all the provided values.
 - Typically used in conjunction with `define()`.
 - Example: `then(define("foo", "bar"), "this string is ignored", foo)` returns `"bar"`.
 - It is also a function of the `Null` type, which is useful to chain on a `define()` call.
