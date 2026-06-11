@@ -42,3 +42,20 @@ release. Some specific details may be omitted for brevity.
 ### Developers
 
 - Something...
+
+## 1.0.0
+
+### New
+
+- Added **formula rendering** in notes by starting inline code with an equals sign (which can be changed in the plugin settings).
+- Added **formula rendering** in notes by setting the language of a codeblock as `bases-formula` (which can be changed in the plugin settings).
+- Added **global function** `files()` to get all files in the vault.
+- Added **global function** `md()` to render a markdown string as HTML.
+- Added **global functions** `define()` and `then()` to allow defining and using local variables in a formula.
+- Added ability to define **global formulas** in the plugin settings which can be accessed from any base or formula.
+- Added ability to define **custom functions** in the plugin settings which can be accessed from any base or formula.
+
+### Developers
+
+- An API is available to use formulas in your own custom js and scripts. See the docs for more details.
+- Included example of how to setup a Templater integration. See the docs for more details.
