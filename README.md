@@ -100,7 +100,7 @@ FF provides a few extra utility functions you can use in your formulas. More may
 
 `then(any: Any...): any`
 
-- Evaluates every argument passed to it, but only returns the last argument provided.
+- Returns the last of all the provided parameters.
 - Typically used in conjunction with `define()`.
 - Example: `then(define("foo", "bar"), "this string is ignored", foo)` returns `"bar"`.
 - It is also a function of the `Null` type, which is useful to chain on a `define()` call.

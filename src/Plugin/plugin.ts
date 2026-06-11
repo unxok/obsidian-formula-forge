@@ -243,7 +243,7 @@ export class FormulaForge extends Plugin {
 		this.registerGlobalFunc({
 			name: "then",
 			ctx: null,
-			docString: () => "Returns the last value provided",
+			docString: () => "Returns the last of all the provided parameters.",
 			params: [{ name: "any", type: [AnyValue], variadic: true }],
 			applyWithContext(_ctx, _self, ...any) {
 				return any.pop() ?? NullValue.value;
@@ -253,7 +253,7 @@ export class FormulaForge extends Plugin {
 		this.registerInstanceFunc(NullValue, {
 			name: "then",
 			ctx: null,
-			docString: () => "Returns the last value provided",
+			docString: () => "Returns the last of all the provided parameters.",
 			params: [
 				{ name: "self", type: [NullValue] },
 				{ name: "any", type: [AnyValue], variadic: true },
@@ -333,7 +333,8 @@ export class FormulaForge extends Plugin {
 		this.registerGlobalFunc({
 			name: "md",
 			ctx: null,
-			docString: () => "Render markdown",
+			docString: () =>
+				"Converts a markdown string into a code snippet that renders as HTML.",
 			params: [
 				{
 					name: "input",
