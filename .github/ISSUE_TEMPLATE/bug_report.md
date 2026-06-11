@@ -2,7 +2,7 @@
 name: Bug report
 about: Create a report to help us improve
 title: ''
-labels: "\U0001F41Etype/bug"
+labels: bug
 assignees: unxok
 
 ---
@@ -24,7 +24,7 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
-- Better Properties version:
+- Formula Forge version:
  - OS: [e.g. iOS]
  - Obsidian app version:
 - Obsidian installer version:
