@@ -83,7 +83,7 @@ FF provides a few extra utility functions you can use in your formulas. More may
 
 `md(input: number): html`
 
-- Converts a markdown srting into a code snippet that renders as HTML.
+- Converts a markdown string into a code snippet that renders as HTML.
 - Example: `md("*italic*, **bold**, ~~strikethrough~~")`
 
 ### `define()` / `Null.define()`
