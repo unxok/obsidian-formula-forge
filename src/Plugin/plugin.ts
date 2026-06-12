@@ -142,13 +142,6 @@ export class FormulaForge extends Plugin {
 			const isInlineCodeSyntaxChanged =
 				prev.inlineCodeSyntax !== current.inlineCodeSyntax;
 
-			if (isInlineCodeSyntaxChanged && this.rendererManager.postProcessor) {
-				MarkdownPreviewRenderer.unregisterPostProcessor(
-					this.rendererManager.postProcessor
-				);
-				this.rendererManager.registerMarkdownPostProcessor();
-			}
-
 			if (prev.codeBlockLanguage !== current.codeBlockLanguage) {
 				MarkdownPreviewRenderer.unregisterCodeBlockPostProcessor(
 					prev.codeBlockLanguage
