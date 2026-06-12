@@ -25,6 +25,7 @@ import { FormulaForgeSettingTab } from "~/Settings/tab";
 import { RendererManager } from "~/RendererManager";
 import { around } from "monkey-around";
 import { AnyValue, hash32, mulberry32 } from "~/utils";
+import "./index.css";
 
 export class FormulaForge extends Plugin {
 	prototypeResolver: PrototypeResolver;
@@ -343,10 +344,13 @@ export class FormulaForge extends Plugin {
 
 				value.renderTo = (el) => {
 					const mdrc = new MarkdownRenderChild(el);
+					const markdownContainerEl = el.createDiv({
+						cls: "formula-forge--formula-md-rendered",
+					});
 					void MarkdownRenderer.render(
 						this.app,
 						value.data,
-						el,
+						markdownContainerEl,
 						ctx.file.path,
 						mdrc
 					);
