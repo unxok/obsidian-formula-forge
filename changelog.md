@@ -43,10 +43,6 @@ release. Some specific details may be omitted for brevity.
 - Fixed: The global scope version of `then()` now behaves as expected when only one parameter is provided.
 - Fixed: There is no longer an error in the dev console on vault startup if FF is enabled.
 
-### Developers
-
-- Something...
-
 ## 1.0.0
 
 ### New
