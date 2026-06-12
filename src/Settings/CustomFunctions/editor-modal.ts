@@ -10,8 +10,9 @@ import {
 	validateDuplicateFunctionName,
 	validateJsStyleVariable,
 } from "./utils";
-import { validateFormula, validateSetting } from "~/utils/obsidian";
+import { validateSetting } from "~/utils/obsidian";
 import { arrayMove } from "~/utils";
+import { FormulaEditor } from "~/common/FormulaEditor";
 
 export class CustomFunctionEditorModal extends ConfirmationModal {
 	public original: CustomFunction;
@@ -223,7 +224,6 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 		});
 
 		new SettingGroup(contentEl).addSetting((s) => {
-			const validate = validateSetting(s);
 			s.setName(t("settings.customFunctions.editorModal.formula.name"));
 			s.setDesc(
 				window.createFragment((el) => {
@@ -233,21 +233,10 @@ export class CustomFunctionEditorModal extends ConfirmationModal {
 					});
 				})
 			);
-			s.addTextArea((text) => {
-				text
-					.setPlaceholder(
-						t("settings.customFunctions.editorModal.formula.placeholder")
-					)
-					.setValue(customFunction.formula)
-					.onChange((v) => {
-						const isValid = validate([validateFormula(plugin, v)]);
-						if (!isValid) {
-							this.customFunction.formula = this.original.formula;
-							return;
-						}
-
-						customFunction.formula = v;
-					});
+			const editor = new FormulaEditor(plugin, s.controlEl);
+			editor.setValue(customFunction.formula);
+			editor.onChange((v) => {
+				this.customFunction.formula = v;
 			});
 		});
 	}

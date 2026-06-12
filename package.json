@@ -37,6 +37,8 @@
 		"vitest": "4.1.8"
 	},
 	"dependencies": {
+		"@lezer/common": "^1.5.2",
+		"@lezer/javascript": "^1.5.4",
 		"monkey-around": "3.0.0",
 		"valibot": "1.2.0"
 	}
