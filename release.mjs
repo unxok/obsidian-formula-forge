@@ -14,14 +14,13 @@ exec(
 	`git tag -a ${version} -m "${version}" && git push origin ${version}`,
 	(error, stdout, stderr) => {
 		if (error) {
-			console.error(`Execution error: ${error.message}`);
+			console.error(error.message);
 			process.exit(-1);
 		}
 		if (stderr) {
-			console.error(`Shell error: ${stderr}`);
+			console.error(stderr);
 			process.exit(-1);
 		}
-
 		console.log(stdout);
 	}
 );
