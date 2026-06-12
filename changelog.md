@@ -30,6 +30,7 @@ release. Some specific details may be omitted for brevity.
 ### New
 
 - Added the **global function** `stableRandom()`. Use it to get a consistent random number between 0 and 1 based on the provided seed.
+- Added formula syntax highlighting to inline-code, codeblocks, and settings. <!-- TODO update demo images and gifs -->
 
 ### Improvements
 
