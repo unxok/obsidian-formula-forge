@@ -25,6 +25,7 @@ Render bases formulas in your notes, define global formulas and functions, and m
   - [`md()`](#md)
   - [`define()` / `Null.define()`](#define--nulldefine)
   - [`then()` / `Null.then()`](#then--nullthen)
+  - [`stableRandom()`](#stablerandom)
 - [Global formulas](#global-formulas)
 - [Custom functions](#custom-functions)
   - [Global scope example](#global-scope-example)
@@ -74,7 +75,7 @@ FF provides a few extra utility functions you can use in your formulas. More may
 
 ### `files()`
 
-`files(): List`
+`files(): list`
 
 - Gets all files in the vault
 - Example: `files().filter(value.inFolder("myFolder"))`.
@@ -83,7 +84,7 @@ FF provides a few extra utility functions you can use in your formulas. More may
 
 `md(input: number): html`
 
-- Converts a markdown srting into a code snippet that renders as HTML.
+- Converts a markdown string into a code snippet that renders as HTML.
 - Example: `md("*italic*, **bold**, ~~strikethrough~~")`
 
 ### `define()` / `Null.define()`
@@ -98,13 +99,21 @@ FF provides a few extra utility functions you can use in your formulas. More may
 
 ### `then()` / `Null.then()`
 
-`then(any: Any...): any`
+`then(values: any...): any`
 
-- Evaluates every argument passed to it, but only returns the last argument provided.
+- Returns the last of all the provided values.
 - Typically used in conjunction with `define()`.
 - Example: `then(define("foo", "bar"), "this string is ignored", foo)` returns `"bar"`.
 - It is also a function of the `Null` type, which is useful to chain on a `define()` call.
 - Example: `define(who, "world").then("Hello " + who + "!")` returns `"Hello world!"`.
+
+### `stableRandom()`
+
+`stableRandom(seed: any): number`
+
+- Returns a random number between 0 and 1 that is consistent per the provided `seed` parameter.
+- Uses a 32-bit hashing algorithm from [MurmurHash](https://github.com/aappleby/smhasher) to create the seed, which is then passed to a [Mulberry32](https://www.4rknova.com/blog/2026/03/01/mulberry32-rng) pseudo-random number generator.
+- Example: `stableRandom("fizz")` will always return `0.027356557780876756`
 
 ## Global formulas
 

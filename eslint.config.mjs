@@ -30,7 +30,7 @@ export default defineConfig([
 	// 		},
 	// 	},
 	// },
-	globalIgnores(["main.js"]),
+	globalIgnores(["main.js", "getChangelogEntry.mjs", "release.mjs"]),
 	{
 		// rules: {
 		// 	"@typescript-eslint/no-empty-object-type": "off",

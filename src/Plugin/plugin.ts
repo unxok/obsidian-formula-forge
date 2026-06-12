@@ -6,9 +6,11 @@ import {
 	HTMLValue,
 	ListValue,
 	MarkdownPreviewRenderer,
+	MarkdownRenderChild,
 	MarkdownRenderer,
 	Notice,
 	NullValue,
+	NumberValue,
 	Plugin,
 	PluginManifest,
 	StringValue,
@@ -22,7 +24,8 @@ import { Api } from "~/Api";
 import { FormulaForgeSettingTab } from "~/Settings/tab";
 import { RendererManager } from "~/RendererManager";
 import { around } from "monkey-around";
-import { AnyValue } from "~/utils";
+import { AnyValue, hash32, mulberry32 } from "~/utils";
+import "./index.css";
 
 export class FormulaForge extends Plugin {
 	prototypeResolver: PrototypeResolver;
@@ -50,8 +53,10 @@ export class FormulaForge extends Plugin {
 			this.addChild(this.rendererManager);
 			this.registerCustomFunctions();
 
-			if (!this.app.workspace.layoutReady) return;
-			this.rebuildLeaves({ bases: true, formulas: true });
+			if (this.app.workspace.layoutReady) {
+				this.rebuildLeaves({ bases: true, formulas: true });
+			}
+			this.handleSettingsChange(this.getSettings(), this.getSettings());
 		});
 	}
 
@@ -138,13 +143,6 @@ export class FormulaForge extends Plugin {
 
 			const isInlineCodeSyntaxChanged =
 				prev.inlineCodeSyntax !== current.inlineCodeSyntax;
-
-			if (isInlineCodeSyntaxChanged && this.rendererManager.postProcessor) {
-				MarkdownPreviewRenderer.unregisterPostProcessor(
-					this.rendererManager.postProcessor
-				);
-				this.rendererManager.registerMarkdownPostProcessor();
-			}
 
 			if (prev.codeBlockLanguage !== current.codeBlockLanguage) {
 				MarkdownPreviewRenderer.unregisterCodeBlockPostProcessor(
@@ -243,23 +241,23 @@ export class FormulaForge extends Plugin {
 		this.registerGlobalFunc({
 			name: "then",
 			ctx: null,
-			docString: () => "Returns the last value provided",
-			params: [{ name: "any", type: [AnyValue], variadic: true }],
-			applyWithContext(_ctx, _self, ...any) {
-				return any.pop() ?? NullValue.value;
+			docString: () => "Returns the last of all the provided values.",
+			params: [{ name: "values", type: [AnyValue], variadic: true }],
+			applyWithContext(_ctx, ...values) {
+				return values.pop() ?? NullValue.value;
 			},
 		});
 
 		this.registerInstanceFunc(NullValue, {
 			name: "then",
 			ctx: null,
-			docString: () => "Returns the last value provided",
+			docString: () => "Returns the last of all the provided values.",
 			params: [
 				{ name: "self", type: [NullValue] },
-				{ name: "any", type: [AnyValue], variadic: true },
+				{ name: "values", type: [AnyValue], variadic: true },
 			],
-			applyWithContext(_ctx, _self, ...any) {
-				return any.pop() ?? NullValue.value;
+			applyWithContext(_ctx, _self, ...values) {
+				return values.pop() ?? NullValue.value;
 			},
 		});
 
@@ -333,7 +331,8 @@ export class FormulaForge extends Plugin {
 		this.registerGlobalFunc({
 			name: "md",
 			ctx: null,
-			docString: () => "Render markdown",
+			docString: () =>
+				"Converts a markdown string into a code snippet that renders as HTML.",
 			params: [
 				{
 					name: "input",
@@ -344,16 +343,39 @@ export class FormulaForge extends Plugin {
 				const value = new HTMLValue(input.data);
 
 				value.renderTo = (el) => {
+					const mdrc = new MarkdownRenderChild(el);
+					const markdownContainerEl = el.createDiv({
+						cls: "formula-forge--formula-md-rendered",
+					});
 					void MarkdownRenderer.render(
 						this.app,
 						value.data,
-						el,
+						markdownContainerEl,
 						ctx.file.path,
-						ctx.ctx
+						mdrc
 					);
 				};
 
 				return value;
+			},
+		});
+
+		this.registerGlobalFunc({
+			name: "stableRandom",
+			ctx: null,
+			docString: () =>
+				"Returns a random number between 0 and 1 that is consistent per the provided `seed` parameter.",
+			params: [
+				{
+					name: "seed",
+					type: [AnyValue],
+				},
+			],
+			applyWithContext: (_ctx, seed): NumberValue => {
+				const str = seed.toString();
+				const hash = hash32(str);
+				const num = mulberry32(hash);
+				return new NumberValue(num);
 			},
 		});
 	}

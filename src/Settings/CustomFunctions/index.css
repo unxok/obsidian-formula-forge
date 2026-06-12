@@ -1,3 +1,47 @@
 .formula-forge--import-custom-function-error-container {
 	white-space: break-spaces;
 }
+
+.formula-forge--formula-editor-container.formula-editor-container {
+	/* min-width: 20%; */
+	width: 100%;
+	max-width: 260px;
+
+	& .formula-forge--formula-editor.formula-editor {
+		overflow: hidden;
+		resize: both;
+		/* min-width: 20%; */
+		width: 100%;
+		max-width: 260px;
+		align-items: start;
+		justify-content: start;
+		text-align: start;
+		margin-inline-start: auto;
+
+		& .cm-scroller {
+			color: var(--code-normal);
+			font-family: var(--font-monospace);
+			font-size: var(--font-smallest);
+		}
+	}
+
+	& .formula-editor-status {
+		display: flex;
+		align-items: center;
+		font-size: var(--font-ui-smaller);
+		margin-top: var(--size-4-1);
+		color: var(--text-success);
+
+		&.mod-error {
+			color: var(--text-error);
+		}
+
+		& .status-icon {
+			--icon-size: var(--icon-xs);
+			--icon-stroke: var(--icon-xs-stroke-width);
+			display: flex;
+			align-items: center;
+			margin-right: var(--size-4-1);
+		}
+	}
+}

@@ -1,12 +1,13 @@
 import { Modal, SettingGroup } from "obsidian";
 import { t } from "~/i18n";
 import { FormulaForge } from "~/Plugin";
-import { validateSetting, validateFormula } from "~/utils/obsidian";
+import { validateSetting } from "~/utils/obsidian";
 import {
 	GlobalFormula,
 	validateDuplicateFormulaName,
 	validateNotEmpty,
 } from "./utils";
+import { FormulaEditor } from "~/common/FormulaEditor";
 
 export class GlobalFormulaEditorModal extends Modal {
 	original: GlobalFormula;
@@ -55,7 +56,6 @@ export class GlobalFormulaEditorModal extends Modal {
 				});
 			})
 			.addSetting((s) => {
-				const validate = validateSetting(s);
 				s.setName(t("settings.globalFormulas.editorModal.formula.name"));
 				s.setDesc(
 					window.createFragment((el) => {
@@ -65,21 +65,10 @@ export class GlobalFormulaEditorModal extends Modal {
 						});
 					})
 				);
-				s.addTextArea((text) => {
-					text.setPlaceholder(
-						t("settings.globalFormulas.editorModal.formula.placeholder")
-					);
-					text.setValue(globalFormula.formula);
-					text.onChange((v) => {
-						const isValid = validate([validateFormula(this.plugin, v)]);
-
-						if (!isValid) {
-							globalFormula.formula = this.original.formula;
-							return;
-						}
-
-						globalFormula.formula = v;
-					});
+				const editor = new FormulaEditor(this.plugin, s.controlEl);
+				editor.setValue(globalFormula.formula);
+				editor.onChange((v) => {
+					globalFormula.formula = v;
 				});
 			});
 	}
