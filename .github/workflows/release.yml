@@ -48,4 +48,5 @@ jobs:
 
           gh release create "$tag" \
             --title="$tag" \
+            --notes-file "${{ steps.notes.outputs.file }}" \
             dist/main.js manifest.json dist/styles.css
