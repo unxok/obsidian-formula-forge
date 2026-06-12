@@ -6,6 +6,7 @@ import {
 	HTMLValue,
 	ListValue,
 	MarkdownPreviewRenderer,
+	MarkdownRenderChild,
 	MarkdownRenderer,
 	Notice,
 	NullValue,
@@ -341,12 +342,13 @@ export class FormulaForge extends Plugin {
 				const value = new HTMLValue(input.data);
 
 				value.renderTo = (el) => {
+					const mdrc = new MarkdownRenderChild(el);
 					void MarkdownRenderer.render(
 						this.app,
 						value.data,
 						el,
 						ctx.file.path,
-						ctx.ctx
+						mdrc
 					);
 				};
 
