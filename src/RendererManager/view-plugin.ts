@@ -11,8 +11,109 @@ import { EditorSelection, Range } from "@codemirror/state";
 import { editorInfoField, editorLivePreviewField, TFile } from "obsidian";
 import { initInlineFormulaRenderer } from "./renderer";
 import { FormulaForge } from "~/Plugin";
-import { SyntaxNode, SyntaxNodeRef } from "@lezer/common";
 import { createFormulaSyntaxHighlighting } from "~/utils/codemirror";
+
+export const createFormulaSyntaxHighlightingPlugin = (plugin: FormulaForge) => {
+	const syntaxHighlightingPlugin = ViewPlugin.fromClass(
+		class {
+			decorations: DecorationSet;
+			view: EditorView;
+
+			constructor(view: EditorView) {
+				this.decorations = this.buildDecorations(view);
+				this.view = view;
+			}
+
+			update(update: ViewUpdate) {
+				if (
+					!(update.docChanged || update.selectionSet || update.viewportChanged)
+				)
+					return;
+				this.decorations = this.buildDecorations(update.view);
+			}
+
+			buildDecorations(view: EditorView) {
+				this.decorations = Decoration.set([]);
+				const decorations: Range<Decoration>[] = [];
+				const tree = syntaxTree(view.state);
+
+				let codeblockStart: number | undefined = undefined;
+
+				// traverse the document and find internal links
+				for (const { from, to } of view.visibleRanges)
+					tree.iterate({
+						from,
+						to,
+						enter: (node) => {
+							const names = node.name.split("_");
+
+							// check for beginning of formula codeblock
+							if (names.includes("HyperMD-codeblock-begin")) {
+								const heading = view.state.doc.sliceString(node.from, node.to);
+								const isFormula =
+									heading === "```" + plugin.getSettings().codeBlockLanguage;
+								if (isFormula) {
+									codeblockStart = node.to;
+									return;
+								}
+							}
+
+							// check for end of formula codeblock
+							if (
+								codeblockStart !== undefined &&
+								names.includes("HyperMD-codeblock-end")
+							) {
+								const codeblockEnd = node.from;
+								const formula = view.state.doc.sliceString(
+									codeblockStart,
+									codeblockEnd
+								);
+								const decos = createFormulaSyntaxHighlighting(
+									formula,
+									codeblockStart
+								);
+								if (decos) {
+									decorations.push(...decos);
+								}
+								return;
+							}
+
+							if (!names.includes("inline-code")) return;
+
+							const { inlineCodeSyntax } = plugin.getSettings();
+							if (!inlineCodeSyntax) return;
+
+							const text = view.state.doc.sliceString(node.from, node.to);
+							if (!text.startsWith(inlineCodeSyntax)) return;
+
+							const formula = text.slice(inlineCodeSyntax.length);
+							if (!formula) return;
+
+							const prev = node.node.prevSibling;
+							const next = node.node.nextSibling;
+
+							if (!prev || !next) return;
+
+							const containingFile = view.state.field(editorInfoField).file;
+							if (!containingFile) return;
+
+							// apply syntax highlighting
+							const offset = node.from + inlineCodeSyntax.length;
+							decorations.push(
+								...createFormulaSyntaxHighlighting(formula, offset)
+							);
+						},
+					});
+
+				return Decoration.set(decorations.toSorted((a, b) => a.from - b.from));
+			}
+		},
+		{
+			decorations: (v) => v.decorations,
+		}
+	);
+	return syntaxHighlightingPlugin;
+};
 
 /**
  * Creates the CM6 plugin for rendering property links
@@ -54,14 +155,7 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 						enter: (node) => {
 							const names = node.name.split("_");
 
-							if (names.includes("formatting-code-block")) {
-								const decos = handleCodeblock(plugin, view, node);
-								// formula codeblock was found and highlights were created
-								if (decos) {
-									decorations.push(...decos);
-									return;
-								}
-							}
+							if (!names.includes("inline-code")) return;
 
 							const { inlineCodeSyntax } = plugin.getSettings();
 							if (!inlineCodeSyntax) return;
@@ -86,16 +180,8 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 								next.to
 							);
 
-							if (selOverlap) {
-								// cursor or selection overlaps the inline code
-
-								// apply syntax highlighting
-								const offset = node.from + inlineCodeSyntax.length;
-								decorations.push(
-									...createFormulaSyntaxHighlighting(formula, offset)
-								);
-								return;
-							}
+							// skip rendering because cursor is in code or selection overlaps it
+							if (selOverlap) return;
 
 							// render formula in place of inline code
 							let widget = Decoration.replace({
@@ -195,43 +281,4 @@ const selectionAndRangeOverlap = (
 	}
 
 	return false;
-};
-
-/**
- *
- * @param plugin The FormulaForge plugin instance
- * @param view The EditorView containing the node
- * @param node The node corresponding to the beginning of the codeblock formatting
- * @returns
- */
-const handleCodeblock = (
-	plugin: FormulaForge,
-	view: EditorView,
-	node: SyntaxNodeRef
-): Range<Decoration>[] | void => {
-	const { codeBlockLanguage } = plugin.getSettings();
-	if (!codeBlockLanguage) return;
-	const heading = view.state.doc.sliceString(node.from, node.to);
-	const isFormula = heading === "```" + codeBlockLanguage;
-	if (!isFormula) return;
-	const endingNode = getCodeblockEnd(node.node);
-	if (!endingNode) return;
-	const formula = view.state.doc.sliceString(node.to, endingNode.from);
-	const offset = node.to;
-	return createFormulaSyntaxHighlighting(formula, offset);
-};
-
-/**
- * Finds the node which marks the end of the codeblock formatting
- * @param node The node corresponding to the beginning of the codeblock formatting
- * @returns
- */
-const getCodeblockEnd = (node: SyntaxNode): SyntaxNode | undefined => {
-	const { nextSibling } = node;
-	if (!nextSibling) return undefined;
-	const names = nextSibling.name.split("_");
-	if (names.includes("HyperMD-codeblock-end")) {
-		return nextSibling;
-	}
-	return getCodeblockEnd(nextSibling);
 };

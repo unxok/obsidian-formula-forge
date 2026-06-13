@@ -4,4 +4,8 @@
 		margin: 0;
 		display: inline-block;
 	}
+
+	.formula-forge--formula-container > & {
+		width: 100%;
+	}
 }
