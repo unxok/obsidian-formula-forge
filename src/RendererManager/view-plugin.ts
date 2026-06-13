@@ -11,7 +11,6 @@ import { EditorSelection, Range } from "@codemirror/state";
 import { editorInfoField, editorLivePreviewField, TFile } from "obsidian";
 import { initInlineFormulaRenderer } from "./renderer";
 import { FormulaForge } from "~/Plugin";
-import { SyntaxNode, SyntaxNodeRef } from "@lezer/common";
 import { createFormulaSyntaxHighlighting } from "~/utils/codemirror";
 
 /**
@@ -46,6 +45,8 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 				let widgets: Range<Decoration>[] = [];
 				const tree = syntaxTree(view.state);
 
+				let codeblockStart: number | undefined = undefined;
+
 				// traverse the document and find internal links
 				for (const { from, to } of view.visibleRanges)
 					tree.iterate({
@@ -54,31 +55,53 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 						enter: (node) => {
 							const names = node.name.split("_");
 
-							if (names.includes("formatting-code-block")) {
-								const decos = handleCodeblock(plugin, view, node);
-								// formula codeblock was found and highlights were created
-								if (decos) {
-									decorations.push(...decos);
-									return;
+							// check for beginning of formula codeblock
+							if (names.includes("HyperMD-codeblock-begin")) {
+								const heading = view.state.doc.sliceString(node.from, node.to);
+								const isFormula =
+									heading === "```" + plugin.getSettings().codeBlockLanguage;
+								if (isFormula) {
+									codeblockStart = node.to;
+									return false;
 								}
 							}
 
+							// check for end of formula codeblock
+							if (
+								codeblockStart !== undefined &&
+								names.includes("HyperMD-codeblock-end")
+							) {
+								const codeblockEnd = node.from;
+								const formula = view.state.doc.sliceString(
+									codeblockStart,
+									codeblockEnd
+								);
+								const decos = createFormulaSyntaxHighlighting(
+									formula,
+									codeblockStart
+								);
+								if (decos) {
+									decorations.push(...decos);
+								}
+								return false;
+							}
+
 							const { inlineCodeSyntax } = plugin.getSettings();
-							if (!inlineCodeSyntax) return;
+							if (!inlineCodeSyntax) return false;
 
 							const text = view.state.doc.sliceString(node.from, node.to);
-							if (!text.startsWith(inlineCodeSyntax)) return;
+							if (!text.startsWith(inlineCodeSyntax)) return false;
 
 							const formula = text.slice(inlineCodeSyntax.length);
-							if (!formula) return;
+							if (!formula) return false;
 
 							const prev = node.node.prevSibling;
 							const next = node.node.nextSibling;
 
-							if (!prev || !next) return;
+							if (!prev || !next) return false;
 
 							const containingFile = view.state.field(editorInfoField).file;
-							if (!containingFile) return;
+							if (!containingFile) return false;
 
 							const selOverlap = selectionAndRangeOverlap(
 								view.state.selection,
@@ -94,7 +117,7 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 								decorations.push(
 									...createFormulaSyntaxHighlighting(formula, offset)
 								);
-								return;
+								return false;
 							}
 
 							// render formula in place of inline code
@@ -195,43 +218,4 @@ const selectionAndRangeOverlap = (
 	}
 
 	return false;
-};
-
-/**
- *
- * @param plugin The FormulaForge plugin instance
- * @param view The EditorView containing the node
- * @param node The node corresponding to the beginning of the codeblock formatting
- * @returns
- */
-const handleCodeblock = (
-	plugin: FormulaForge,
-	view: EditorView,
-	node: SyntaxNodeRef
-): Range<Decoration>[] | void => {
-	const { codeBlockLanguage } = plugin.getSettings();
-	if (!codeBlockLanguage) return;
-	const heading = view.state.doc.sliceString(node.from, node.to);
-	const isFormula = heading === "```" + codeBlockLanguage;
-	if (!isFormula) return;
-	const endingNode = getCodeblockEnd(node.node);
-	if (!endingNode) return;
-	const formula = view.state.doc.sliceString(node.to, endingNode.from);
-	const offset = node.to;
-	return createFormulaSyntaxHighlighting(formula, offset);
-};
-
-/**
- * Finds the node which marks the end of the codeblock formatting
- * @param node The node corresponding to the beginning of the codeblock formatting
- * @returns
- */
-const getCodeblockEnd = (node: SyntaxNode): SyntaxNode | undefined => {
-	const { nextSibling } = node;
-	if (!nextSibling) return undefined;
-	const names = nextSibling.name.split("_");
-	if (names.includes("HyperMD-codeblock-end")) {
-		return nextSibling;
-	}
-	return getCodeblockEnd(nextSibling);
 };
