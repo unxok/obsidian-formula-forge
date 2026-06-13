@@ -25,7 +25,7 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
-## 1.2.0
+## 1.1.1
 
 ### Improvements
 
