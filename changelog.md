@@ -17,7 +17,7 @@ release. Some specific details may be omitted for brevity.
 
 ### No longer broken
 
-- Fixed: ...
+- Fixed ...
 
 ### Developers
 
@@ -29,11 +29,12 @@ release. Some specific details may be omitted for brevity.
 
 ### Improvements
 
-- Formula syntax highlighting now works in source mode
+- Formula syntax highlighting now works in source mode.
+- Formula codeblocks now render as wide as the full width of the note.
 
 ### No longer broken
 
-- Formula codeblock syntax highlighting now works consistently
+- Fixed formula codeblock syntax highlighting not working consistently.
 
 ## 1.1.0
 
