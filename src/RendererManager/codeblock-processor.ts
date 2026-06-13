@@ -24,17 +24,21 @@ export const createFormulaRendererCodeblockProcessor = (
 					return i !== 0 && str;
 				});
 
-			const containerEl = window.createSpan({ cls: cssClasses });
-			el.replaceWith(containerEl);
-			const component = new MarkdownRenderChild(containerEl);
+			// const containerEl = window.createSpan({ cls: cssClasses });
+			// el.replaceWith(containerEl);
+			const component = new MarkdownRenderChild(el);
 			ctx.addChild(component);
 
 			const renderer = initInlineFormulaRenderer({
 				plugin,
 				containingFile,
-				containerEl,
+				containerEl: el,
 				formula,
 			});
+
+			if (cssClasses) {
+				renderer.containerEl.classList.add(...cssClasses);
+			}
 
 			component.register(() => {
 				plugin.rendererManager.renderers.delete(renderer);

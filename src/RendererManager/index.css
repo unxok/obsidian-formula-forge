@@ -1,4 +1,8 @@
 .formula-forge--formula-container {
 	display: inline-block;
 	white-space: nowrap;
+
+	[class*="block-language-"] > & {
+		width: 100%;
+	}
 }

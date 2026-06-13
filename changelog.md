@@ -25,6 +25,16 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
+## 1.2.0
+
+### Improvements
+
+- Formula syntax highlighting now works in source mode
+
+### No longer broken
+
+- Formula codeblock syntax highlighting now works consistently
+
 ## 1.1.0
 
 ### New

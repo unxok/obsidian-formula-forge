@@ -13,11 +13,8 @@ import { initInlineFormulaRenderer } from "./renderer";
 import { FormulaForge } from "~/Plugin";
 import { createFormulaSyntaxHighlighting } from "~/utils/codemirror";
 
-/**
- * Creates the CM6 plugin for rendering property links
- */
-export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
-	const inlineCodePlugin = ViewPlugin.fromClass(
+export const createFormulaSyntaxHighlightingPlugin = (plugin: FormulaForge) => {
+	const syntaxHighlightingPlugin = ViewPlugin.fromClass(
 		class {
 			decorations: DecorationSet;
 			view: EditorView;
@@ -28,10 +25,6 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 			}
 
 			update(update: ViewUpdate) {
-				if (!update.state.field(editorLivePreviewField)) {
-					this.decorations = Decoration.none;
-					return;
-				}
 				if (
 					!(update.docChanged || update.selectionSet || update.viewportChanged)
 				)
@@ -42,7 +35,6 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 			buildDecorations(view: EditorView) {
 				this.decorations = Decoration.set([]);
 				const decorations: Range<Decoration>[] = [];
-				let widgets: Range<Decoration>[] = [];
 				const tree = syntaxTree(view.state);
 
 				let codeblockStart: number | undefined = undefined;
@@ -86,6 +78,85 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 								return;
 							}
 
+							if (!names.includes("inline-code")) return;
+
+							const { inlineCodeSyntax } = plugin.getSettings();
+							if (!inlineCodeSyntax) return;
+
+							const text = view.state.doc.sliceString(node.from, node.to);
+							if (!text.startsWith(inlineCodeSyntax)) return;
+
+							const formula = text.slice(inlineCodeSyntax.length);
+							if (!formula) return;
+
+							const prev = node.node.prevSibling;
+							const next = node.node.nextSibling;
+
+							if (!prev || !next) return;
+
+							const containingFile = view.state.field(editorInfoField).file;
+							if (!containingFile) return;
+
+							// apply syntax highlighting
+							const offset = node.from + inlineCodeSyntax.length;
+							decorations.push(
+								...createFormulaSyntaxHighlighting(formula, offset)
+							);
+						},
+					});
+
+				return Decoration.set(decorations.toSorted((a, b) => a.from - b.from));
+			}
+		},
+		{
+			decorations: (v) => v.decorations,
+		}
+	);
+	return syntaxHighlightingPlugin;
+};
+
+/**
+ * Creates the CM6 plugin for rendering property links
+ */
+export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
+	const inlineCodePlugin = ViewPlugin.fromClass(
+		class {
+			decorations: DecorationSet;
+			view: EditorView;
+
+			constructor(view: EditorView) {
+				this.decorations = this.buildDecorations(view);
+				this.view = view;
+			}
+
+			update(update: ViewUpdate) {
+				if (!update.state.field(editorLivePreviewField)) {
+					this.decorations = Decoration.none;
+					return;
+				}
+				if (
+					!(update.docChanged || update.selectionSet || update.viewportChanged)
+				)
+					return;
+				this.decorations = this.buildDecorations(update.view);
+			}
+
+			buildDecorations(view: EditorView) {
+				this.decorations = Decoration.set([]);
+				const decorations: Range<Decoration>[] = [];
+				let widgets: Range<Decoration>[] = [];
+				const tree = syntaxTree(view.state);
+
+				// traverse the document and find internal links
+				for (const { from, to } of view.visibleRanges)
+					tree.iterate({
+						from,
+						to,
+						enter: (node) => {
+							const names = node.name.split("_");
+
+							if (!names.includes("inline-code")) return;
+
 							const { inlineCodeSyntax } = plugin.getSettings();
 							if (!inlineCodeSyntax) return;
 
@@ -109,16 +180,8 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 								next.to
 							);
 
-							if (selOverlap) {
-								// cursor or selection overlaps the inline code
-
-								// apply syntax highlighting
-								const offset = node.from + inlineCodeSyntax.length;
-								decorations.push(
-									...createFormulaSyntaxHighlighting(formula, offset)
-								);
-								return;
-							}
+							// skip rendering because cursor is in code or selection overlaps it
+							if (selOverlap) return;
 
 							// render formula in place of inline code
 							let widget = Decoration.replace({

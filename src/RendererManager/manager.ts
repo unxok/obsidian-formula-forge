@@ -4,7 +4,10 @@ import { FormulaRenderer } from "./renderer";
 import "./index.css";
 import { createFormulaRendererCodeblockProcessor } from "./codeblock-processor";
 import { createFormulaRendererPostProcessor } from "./post-processor";
-import { createInlineFormulaRendererPlugin } from "./view-plugin";
+import {
+	createFormulaSyntaxHighlightingPlugin,
+	createInlineFormulaRendererPlugin,
+} from "./view-plugin";
 
 export class RendererManager extends Component {
 	renderers: Set<FormulaRenderer> = new Set();
@@ -21,6 +24,7 @@ export class RendererManager extends Component {
 		this.registerMarkdownCodeBlockProcessor();
 		this.plugin.registerEditorExtension([
 			createInlineFormulaRendererPlugin(this.plugin),
+			createFormulaSyntaxHighlightingPlugin(this.plugin),
 		]);
 		this.registerEvent(
 			this.plugin.app.metadataCache.on("resolved", () =>
