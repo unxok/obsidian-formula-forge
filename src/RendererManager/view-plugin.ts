@@ -62,7 +62,7 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 									heading === "```" + plugin.getSettings().codeBlockLanguage;
 								if (isFormula) {
 									codeblockStart = node.to;
-									return false;
+									return;
 								}
 							}
 
@@ -83,25 +83,25 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 								if (decos) {
 									decorations.push(...decos);
 								}
-								return false;
+								return;
 							}
 
 							const { inlineCodeSyntax } = plugin.getSettings();
-							if (!inlineCodeSyntax) return false;
+							if (!inlineCodeSyntax) return;
 
 							const text = view.state.doc.sliceString(node.from, node.to);
-							if (!text.startsWith(inlineCodeSyntax)) return false;
+							if (!text.startsWith(inlineCodeSyntax)) return;
 
 							const formula = text.slice(inlineCodeSyntax.length);
-							if (!formula) return false;
+							if (!formula) return;
 
 							const prev = node.node.prevSibling;
 							const next = node.node.nextSibling;
 
-							if (!prev || !next) return false;
+							if (!prev || !next) return;
 
 							const containingFile = view.state.field(editorInfoField).file;
-							if (!containingFile) return false;
+							if (!containingFile) return;
 
 							const selOverlap = selectionAndRangeOverlap(
 								view.state.selection,
@@ -117,7 +117,7 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 								decorations.push(
 									...createFormulaSyntaxHighlighting(formula, offset)
 								);
-								return false;
+								return;
 							}
 
 							// render formula in place of inline code
