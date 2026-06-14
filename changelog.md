@@ -25,6 +25,12 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
+## 1.1.2
+
+### Improvements
+
+- Improved the performance of the `files()` global function.
+
 ## 1.1.1
 
 ### Improvements
