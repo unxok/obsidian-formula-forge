@@ -230,11 +230,15 @@ export class FormulaForge extends Plugin {
 					new (app: App, file: TFile): FileValue;
 				}
 
-				return new ListValue(
-					this.app.vault
-						.getFiles()
-						.map((f) => new (FileValue as IFileValue)(this.app, f))
-				);
+				const arr: FileValue[] = [];
+
+				for (const name in this.app.vault.fileMap) {
+					const file = this.app.vault.fileMap[name];
+					if (!(file instanceof TFile)) continue;
+					arr.push(new (FileValue as IFileValue)(this.app, file));
+				}
+
+				return new ListValue(arr);
 			},
 		});
 
