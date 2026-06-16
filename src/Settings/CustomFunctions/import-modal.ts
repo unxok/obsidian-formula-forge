@@ -12,7 +12,6 @@ import {
 	validateJsStyleVariable,
 } from "./utils";
 import { FormulaForge } from "~/Plugin";
-import "./index.css";
 import { t } from "~/i18n";
 
 export class CustomFunctionImportModal extends ConfirmationModal {

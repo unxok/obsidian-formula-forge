@@ -9,6 +9,7 @@ import { ValueComponent, setIcon, setTooltip } from "obsidian";
 import { FormulaForge } from "~/Plugin";
 import { createFormulaSyntaxHighlighting } from "~/utils/codemirror";
 import { validateFormula } from "~/utils/obsidian";
+import "./index.css";
 
 /**
  * A textarea-like formula editor with syntax highlighting and validation
