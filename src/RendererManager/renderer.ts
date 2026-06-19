@@ -1,4 +1,4 @@
-import { setIcon, TFile } from "obsidian";
+import { setIcon, TFile, Value } from "obsidian";
 import { FormulaForge } from "~/Plugin";
 
 export const initInlineFormulaRenderer = ({
@@ -43,26 +43,32 @@ export class FormulaRenderer {
 		const { plugin, formula, containingFile, formulaContainerEl } = this;
 
 		const formulaInstance = plugin.api.createFormula(formula);
+		formulaContainerEl.empty();
 
 		if (formulaInstance.formula.type === "invalid") {
-			formulaContainerEl.empty();
-			const errorEl = formulaContainerEl.createDiv({
-				cls: "bases-formula-error",
-			});
-			setIcon(
-				errorEl.createDiv({ cls: "warning-icon" }),
-				"lucide-alert-triangle"
-			);
-			errorEl.createDiv({
-				cls: "bases-formula-error-message",
-				text: formulaInstance.formula.getErrorMessage(),
-			});
-			return;
+			this.displayError(formulaInstance.formula.getErrorMessage());
 		}
 
 		const output = plugin.api.evaluateFormula(formulaInstance, containingFile);
+		if (!(output instanceof Value)) {
+			this.displayError("Invalid output. Did you incorrectly use a function?");
+		}
 
-		formulaContainerEl.empty();
+		if (!output) return;
 		output.renderTo(formulaContainerEl, plugin.app.renderContext);
+	}
+
+	displayError(error: string): void {
+		const errorEl = this.formulaContainerEl.createDiv({
+			cls: "bases-formula-error",
+		});
+		setIcon(
+			errorEl.createDiv({ cls: "warning-icon" }),
+			"lucide-alert-triangle"
+		);
+		errorEl.createDiv({
+			cls: "bases-formula-error-message",
+			text: error,
+		});
 	}
 }
