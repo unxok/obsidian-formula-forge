@@ -24,12 +24,11 @@ export default defineConfig(async ({ mode }) => {
 		resolve: {
 			alias: {
 				"~": path.resolve(__dirname, "./src"),
-				"~~": path.resolve(__dirname, "./src2"),
 			},
 		},
 		build: {
 			lib: {
-				entry: resolve(__dirname, "src2/main.ts"),
+				entry: resolve(__dirname, "src/main.ts"),
 				name: "main",
 				formats: ["cjs"],
 			},
@@ -41,7 +40,7 @@ export default defineConfig(async ({ mode }) => {
 			outDir: "dist",
 			rollupOptions: {
 				input: {
-					main: resolve(__dirname, "src2/main.ts"),
+					main: resolve(__dirname, "src/main.ts"),
 				},
 				output: {
 					entryFileNames: "main.js",

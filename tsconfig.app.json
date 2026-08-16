@@ -23,10 +23,9 @@
 		"noFallthroughCasesInSwitch": true,
 		"baseUrl": "./",
 		"paths": {
-			"~/*": ["./src/*"],
-			"~~/*": ["./src2/*"]
+			"~/*": ["./src/*"]
 		},
 		"types": ["obsidian-typings"]
 	},
-	"include": ["src/**/*", "src2/**/*"]
+	"include": ["src/**/*"]
 }
