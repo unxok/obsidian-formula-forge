@@ -25,6 +25,13 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
+## 1.2.2
+
+### Other
+
+- Updated valibot (dependency)
+- Removed unused dependencies
+
 ## 1.2.1
 
 ### Other
