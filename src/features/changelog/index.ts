@@ -52,6 +52,7 @@ export class Changelog extends Feature {
 	async showChangelog(plugin: FormulaForge): Promise<void> {
 		const cmp = new Component();
 		const modal = new ConfirmationModal(plugin.app);
+		modal.containerEl.classList.add("markdown-preview-view");
 		modal.setTitle(
 			t("changelog.modalTitle", {
 				pluginNameAndVersion: `${plugin.manifest.name} ${plugin.manifest.version}`,
