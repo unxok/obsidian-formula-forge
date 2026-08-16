@@ -5,7 +5,8 @@
 		"save": "Save",
 		"sort": "Sort",
 		"aToZ": "A to Z",
-		"zToA": "Z to A"
+		"zToA": "Z to A",
+		"close": "Close"
 	},
 	"errors": {
 		"parsing": "Parsing error:\n{{error}}",
@@ -16,6 +17,12 @@
 		"notEmpty": "Cannot be empty"
 	},
 	"settings": {
+		"changelog": {
+			"showChangelogOnUpdate": {
+				"name": "Show changelog after update",
+				"desc": "Whether to automatically show what's changed after the plugin is updated. You can also run the command \"show-changelog\" to see it at any time."
+			}
+		},
 		"formulaRendering": {
 			"groupHeading": "Formula rendering",
 			"inlineCodeSyntax": {
@@ -133,5 +140,13 @@
 				}
 			}
 		}
+	},
+	"changelog": {
+		"modalTitle": "What's changed - {{pluginNameAndVersion}}",
+		"dontShowOnUpdate": "Don't show again after update",
+		"command": "Show changelog"
+	},
+	"searchByFormula": {
+		"command": "Search files by formula"
 	}
 }
