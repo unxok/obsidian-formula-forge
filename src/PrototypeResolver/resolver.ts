@@ -11,6 +11,7 @@ import {
 import { FormulaForge } from "~/Plugin";
 import { monkeyAroundKey } from "~/utils";
 import "./index.css";
+import { LanguageSupport } from "@codemirror/language";
 
 export class PrototypeResolver extends Component {
 	constructor(public plugin: FormulaForge) {
@@ -19,10 +20,10 @@ export class PrototypeResolver extends Component {
 
 	onload(): void {
 		this.applyVaultPatches();
-		void (async () => {
-			await this.resolvePrototypes();
-			this.onReadyCallback();
-		})();
+		// void (async () => {
+		// 	await this.init();
+		// 	this.onReadyCallback();
+		// })();
 	}
 
 	onunload(): void {}
@@ -30,16 +31,19 @@ export class PrototypeResolver extends Component {
 	/**
 	 * The callback called when the component has finished its async work
 	 */
-	private onReadyCallback: () => void = () => {};
+	// private onReadyCallback: () => void = () => {};
 
 	/**
 	 * Adds a callback to be called when the component has finished its async work
 	 */
-	onReady(cb: () => void): void {
-		this.onReadyCallback = cb;
-	}
+	// onReady(cb: () => void): void {
+	// 	this.onReadyCallback = cb;
+	// }
 
-	async resolvePrototypes(): Promise<void> {
+	/**
+	 * Resolves Bases-related prototypes and implements relevant `Plugin.api` methods
+	 */
+	async init(): Promise<void> {
 		const { plugin } = this;
 
 		const containerEl = plugin.app.workspace.containerEl.createDiv({
@@ -57,6 +61,11 @@ export class PrototypeResolver extends Component {
 		});
 
 		const { controller } = embedComponent;
+
+		const formulaLangSupport =
+			embedComponent.controller.getEditorLanguageSupport() as LanguageSupport;
+
+		this.getFormulaLanguageSupport = () => formulaLangSupport;
 
 		const formulaPrototype = Object.getPrototypeOf(
 			controller.ctx.formulas[formulaName]
@@ -94,6 +103,15 @@ export class PrototypeResolver extends Component {
 
 		embedComponent.unload();
 		containerEl.remove();
+	}
+
+	/**
+	 * CodeMirror extensions to support Bases Formulas
+	 * - syntax highlighting
+	 * - tooltip autocomplete
+	 */
+	getFormulaLanguageSupport(): LanguageSupport {
+		throw new Error("Method not implemented");
 	}
 
 	/**

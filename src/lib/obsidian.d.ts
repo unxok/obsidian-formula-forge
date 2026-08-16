@@ -7,6 +7,7 @@ import {
 	View,
 	EventRef,
 	Constructor,
+	HoverPopover,
 } from "obsidian";
 import {
 	BasesContext,
@@ -17,6 +18,7 @@ import {
 	EmbedContext,
 } from "obsidian-typings";
 import type { default as i18next } from "i18next";
+import { LanguageSupport } from "@codemirror/language";
 
 type BasesControllerResults = Map<TFile, BasesEntry>;
 
@@ -132,6 +134,14 @@ type FormulaFunctionParamsToArgs<P extends readonly FormulaFunctionParam[]> = {
 	[K in keyof P]: FormulaFunctionParamToValue<P[K]>;
 };
 
+interface Runnable {
+	running: boolean;
+	cancelled: boolean;
+	onStart(): unknown;
+	onStop(): unknown;
+	onCancel(): unknown;
+}
+
 declare module "obsidian-typings" {
 	interface EmbedRegistryEmbedByExtensionRecord {
 		base: (
@@ -163,11 +173,33 @@ declare module "obsidian-typings" {
 		};
 		updateSearchQuery(query: BasesQuery): void;
 		buildBasesContext(filter: BasesFilter | null): BasesContext;
+
+		getEditorLanguageSupport(): LanguageSupport & {
+			ctx: {
+				app: App;
+				cachedProps: unknown;
+				formulaResults: {
+					cachedFormulaOutputs: unknown;
+					formulas: Record<string, BasesFormula>;
+				};
+			};
+		};
+
+		queue: {
+			queue: {
+				runnable: Runnable;
+			};
+			start(runnable: Runnable);
+		};
 	}
 
 	interface BasesQuery {
 		toString(): string;
 		filters: BasesFilter | null;
+
+		constructor: {
+			fromString(queryString: string): BasesQuery;
+		};
 	}
 
 	class BasesContext {
@@ -196,18 +228,21 @@ declare module "obsidian-typings" {
 				resolve: () => unknown;
 				reject: () => unknown;
 			};
-			runnable: {
-				running: boolean;
-				cancelled: boolean;
-				onStart: () => unknown;
-				onStop: () => unknown;
-				onCancel: () => unknown;
-			};
+			runnable: Runnable;
 		};
+		start(runnable: Runnable);
+		dom: BasesController;
 	}
 
 	interface MetadataEditor {
 		focusProperty(property: string): void;
+	}
+
+	interface BasesNewItemMenu {
+		open(e: unknown, t: unknown): unknown;
+		close(): unknown;
+
+		popover: HoverPopover;
 	}
 }
 
@@ -243,7 +278,7 @@ declare module "obsidian" {
 		data: Record<string, unknown>;
 	}
 
-	interface ErrorValue extends Value {
+	export interface ErrorValue extends Value {
 		constructor: {
 			type: "Error";
 		};

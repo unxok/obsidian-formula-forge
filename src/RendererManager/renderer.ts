@@ -1,4 +1,4 @@
-import { setIcon, TFile, Value } from "obsidian";
+import { setIcon, setTooltip, TFile, Value } from "obsidian";
 import { FormulaForge } from "~/Plugin";
 
 export const initInlineFormulaRenderer = ({
@@ -44,6 +44,7 @@ export class FormulaRenderer {
 
 		const formulaInstance = plugin.api.createFormula(formula);
 		formulaContainerEl.empty();
+		setTooltip(formulaContainerEl, formula);
 
 		if (formulaInstance.formula.type === "invalid") {
 			this.displayError(formulaInstance.formula.getErrorMessage());

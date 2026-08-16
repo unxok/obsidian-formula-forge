@@ -12,6 +12,7 @@ import { editorInfoField, editorLivePreviewField, TFile } from "obsidian";
 import { initInlineFormulaRenderer } from "./renderer";
 import { FormulaForge } from "~/Plugin";
 import { createFormulaSyntaxHighlighting } from "~/utils/codemirror";
+import { FormulaInfo, formulaInfoEffect } from "~/RendererManager/formula-info";
 
 export const createFormulaSyntaxHighlightingPlugin = (plugin: FormulaForge) => {
 	const syntaxHighlightingPlugin = ViewPlugin.fromClass(
@@ -38,6 +39,13 @@ export const createFormulaSyntaxHighlightingPlugin = (plugin: FormulaForge) => {
 				const tree = syntaxTree(view.state);
 
 				let codeblockStart: number | undefined = undefined;
+				let codeblockEnd: number | undefined = undefined;
+
+				const CB_BEGIN = "HyperMD-codeblock-begin";
+				const CB_END = "HyperMD-codeblock-end";
+				const INLINE_CODE = "inline-code";
+
+				const formulaInfo: FormulaInfo = { isWithin: false, from: -1, to: -1 };
 
 				// traverse the document and find internal links
 				for (const { from, to } of view.visibleRanges)
@@ -48,37 +56,48 @@ export const createFormulaSyntaxHighlightingPlugin = (plugin: FormulaForge) => {
 							const names = node.name.split("_");
 
 							// check for beginning of formula codeblock
-							if (names.includes("HyperMD-codeblock-begin")) {
+							if (names.includes(CB_BEGIN)) {
 								const heading = view.state.doc.sliceString(node.from, node.to);
 								const isFormula =
 									heading === "```" + plugin.getSettings().codeBlockLanguage;
 								if (isFormula) {
 									codeblockStart = node.to;
-									return;
 								}
 							}
 
 							// check for end of formula codeblock
 							if (
 								codeblockStart !== undefined &&
-								names.includes("HyperMD-codeblock-end")
+								codeblockEnd === undefined &&
+								names.includes(CB_END)
 							) {
-								const codeblockEnd = node.from;
+								codeblockEnd = node.from;
 								const formula = view.state.doc.sliceString(
 									codeblockStart,
 									codeblockEnd
 								);
 								const decos = createFormulaSyntaxHighlighting(
+									plugin,
 									formula,
 									codeblockStart
 								);
-								if (decos) {
-									decorations.push(...decos);
+								decorations.push(...decos);
+
+								const sel = view.state.selection.main;
+								const isCursorWithin =
+									sel.from === sel.to &&
+									sel.from >= codeblockStart &&
+									sel.to <= codeblockEnd;
+
+								if (isCursorWithin) {
+									formulaInfo.isWithin = isCursorWithin;
+									formulaInfo.from = codeblockStart;
+									formulaInfo.to = codeblockEnd;
 								}
 								return;
 							}
 
-							if (!names.includes("inline-code")) return;
+							if (!names.includes(INLINE_CODE)) return;
 
 							const { inlineCodeSyntax } = plugin.getSettings();
 							if (!inlineCodeSyntax) return;
@@ -97,15 +116,49 @@ export const createFormulaSyntaxHighlightingPlugin = (plugin: FormulaForge) => {
 							const containingFile = view.state.field(editorInfoField).file;
 							if (!containingFile) return;
 
+							const formulaFrom = node.from;
+							const formulaTo = node.to;
+
+							const sel = view.state.selection.main;
+							const isCursorWithin =
+								sel.from === sel.to &&
+								sel.from >= formulaFrom &&
+								sel.to <= node.to;
+
+							if (isCursorWithin) {
+								formulaInfo.isWithin = isCursorWithin;
+								formulaInfo.from = formulaFrom;
+								formulaInfo.to = formulaTo;
+							}
+
 							// apply syntax highlighting
 							const offset = node.from + inlineCodeSyntax.length;
 							decorations.push(
-								...createFormulaSyntaxHighlighting(formula, offset)
+								...createFormulaSyntaxHighlighting(plugin, formula, offset)
 							);
 						},
 					});
 
-				return Decoration.set(decorations.toSorted((a, b) => a.from - b.from));
+				this.setWithinFormula(view, formulaInfo);
+
+				return Decoration.set(decorations, true);
+			}
+
+			/**
+			 * Dispatches `formulaInfoEffect`
+			 *
+			 */
+			setWithinFormula(view: EditorView, info: FormulaInfo) {
+				// TODO find a way to do this the "right" way without a zero timeout
+				window.setTimeout(() => {
+					view.dispatch({
+						effects: [
+							formulaInfoEffect.of({
+								...info,
+							}),
+						],
+					});
+				}, 0);
 			}
 		},
 		{
@@ -116,7 +169,7 @@ export const createFormulaSyntaxHighlightingPlugin = (plugin: FormulaForge) => {
 };
 
 /**
- * Creates the CM6 plugin for rendering property links
+ * Creates the CM6 plugin for detecting inline formula syntax
  */
 export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 	const inlineCodePlugin = ViewPlugin.fromClass(
@@ -143,7 +196,6 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 
 			buildDecorations(view: EditorView) {
 				this.decorations = Decoration.set([]);
-				const decorations: Range<Decoration>[] = [];
 				let widgets: Range<Decoration>[] = [];
 				const tree = syntaxTree(view.state);
 
@@ -196,9 +248,7 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 						},
 					});
 
-				return Decoration.set(
-					[...widgets, ...decorations].toSorted((a, b) => a.from - b.from)
-				);
+				return Decoration.set(widgets, true);
 			}
 		},
 		{
@@ -209,7 +259,7 @@ export const createInlineFormulaRendererPlugin = (plugin: FormulaForge) => {
 };
 
 /**
- * The CM6 widget for handling the rendering of property links
+ * The CM6 widget for handling the rendering of the inline formula's output
  */
 class InlineFormulaRendererWidget extends WidgetType {
 	constructor(
@@ -263,7 +313,7 @@ class InlineFormulaRendererWidget extends WidgetType {
 		return true;
 	}
 
-	eq(widget: InlineFormulaRendererWidget): boolean {
+	eq(widget: this): boolean {
 		return widget.formula === this.formula;
 	}
 }

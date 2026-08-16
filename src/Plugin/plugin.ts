@@ -26,38 +26,39 @@ import { RendererManager } from "~/RendererManager";
 import { around } from "monkey-around";
 import { AnyValue, hash32, mulberry32 } from "~/utils";
 import "./index.css";
+import { BasesAdapter } from "~/BasesAdapter/adapter";
 
 export class FormulaForge extends Plugin {
-	prototypeResolver: PrototypeResolver;
+	// prototypeResolver: PrototypeResolver;
 	rendererManager: RendererManager;
 	api: Api;
+	basesAdapter: BasesAdapter;
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
 
-		this.prototypeResolver = new PrototypeResolver(this);
+		// this.prototypeResolver = new PrototypeResolver(this);
 		this.rendererManager = new RendererManager(this);
 		this.api = new Api(this);
+		this.basesAdapter = new BasesAdapter(this);
 	}
 
 	async onload(): Promise<void> {
-		this.registerUtilityFunctions();
-
 		await this.loadSettings();
-
 		this.addSettingTab(new FormulaForgeSettingTab(this));
-		this.addChild(this.prototypeResolver);
 
-		this.prototypeResolver.onReady(() => {
-			this.api.trigger("ready");
-			this.addChild(this.rendererManager);
-			this.registerCustomFunctions();
+		await this.basesAdapter.init();
+		// this.addChild(this.prototypeResolver);
+		// await this.prototypeResolver.init();
+		this.api.trigger("ready");
+		this.registerUtilityFunctions();
+		this.registerCustomFunctions();
 
-			if (this.app.workspace.layoutReady) {
-				this.rebuildLeaves({ bases: true, formulas: true });
-			}
-			this.handleSettingsChange(this.getSettings(), this.getSettings());
-		});
+		this.addChild(this.rendererManager);
+		if (this.app.workspace.layoutReady) {
+			this.rebuildLeaves({ bases: true, formulas: true });
+		}
+		this.handleSettingsChange(this.getSettings(), this.getSettings());
 	}
 
 	onunload(): void {

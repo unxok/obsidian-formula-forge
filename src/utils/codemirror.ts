@@ -1,26 +1,26 @@
 import { Range } from "@codemirror/state";
 import { Decoration } from "@codemirror/view";
-import { parser } from "@lezer/javascript";
+import { FormulaForge } from "~/Plugin";
 
 // certain things are commented out because Obsidian natively doesn't mark them
 // I'm not sure why they don't mark all the tokens correctly... I asked why in the discord here:
 // https://discord.com/channels/686053708261228577/840286264964022302/1514568255644110969
 
 /**
- * A map of formula token CSS class name -> JS node names
+ * A map of formula token CSS class name -> Formula node names
  */
 const nameClassMappingObj: Record<string, string[]> = {
-	operator: [/* "CompareOp", */ "ArithOp"],
-	punctuation: [".", ",", "(", ")", "[", "]"],
+	operator: ["+", "-", "*", "/"],
+	punctuation: [/*".",*/ /*",",*/ "(", ")", "[", "]"],
 	// boolean: ["BooleanLiteral"],
-	number: ["Number"],
+	number: ["RealNumber"],
 	string: ["String"],
-	property: ["PropertyName", "VariableName"],
+	property: ["Identifier", "Call"],
 	// regex: ["RegExp"],
 };
 
 /**
- * A map of JS node name -> formula CSS class name
+ * A map of Formula node name -> formula CSS class name
  */
 const nameClassMapping: Record<string, string> = Object.entries(
 	nameClassMappingObj
@@ -38,10 +38,19 @@ const nameClassMapping: Record<string, string> = Object.entries(
  * @returns A set of decorations
  */
 export const createFormulaSyntaxHighlighting = (
+	plugin: FormulaForge,
 	text: string,
 	offset: number
 ): Range<Decoration>[] => {
 	const decorations: Range<Decoration>[] = [];
+
+	// const {
+	// 	language: { parser },
+	// } = plugin.prototypeResolver.getFormulaLanguageSupport();
+
+	const {
+		language: { parser },
+	} = plugin.basesAdapter.getFormulaLanguageSupport();
 
 	const jsTree = parser.parse(text);
 	jsTree.iterate({
