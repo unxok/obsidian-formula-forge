@@ -21,6 +21,10 @@ const valueTypeSchema = v.union([
  * @warning Be very careful when changing this as it may invalidate users' existing settings data
  */
 export const formulaForgeSettingsSchema = vOptionalObjectWithDefault({
+	// changelog
+	showChangelogOnUpdate: v.optional(v.boolean(), true),
+	seenChangelogVersion: v.optional(v.string(), "0.0.0"),
+
 	// formula-rendering
 	inlineCodeSyntax: v.optional(v.string(), "="),
 	codeBlockLanguage: v.optional(v.string(), "base-formula"),
