@@ -29,8 +29,24 @@ export class BasesAdapter extends Component {
 			cls: "formula-forge--embeddable-base-editor-container",
 		});
 
-		// eslint-disable-next-line obsidianmd/no-tfile-tfolder-cast -- necessary to get to bases-related prototypes
-		const fakeFile: TFile = {} as TFile;
+		const fakeFileName = crypto.randomUUID();
+		const fakeFile: TFile = {
+			basename: fakeFileName,
+			cache() {},
+			deleted: false,
+			extension: "base",
+			getNewPathAfterRename: () => "",
+			getShortName: () => fakeFileName,
+			name: fakeFileName + ".base",
+			parent: null,
+			path: fakeFileName + ".base",
+			saving: false,
+			setPath() {},
+			stat: { ctime: -1, mtime: -1, size: -1 },
+			updateCacheLimit() {},
+			vault: this.plugin.app.vault,
+			constructor__: {} as TFile["constructor__"],
+		};
 		const formulaName = "fn";
 		const query = `formulas:\n  ${formulaName}: "toString()"`;
 
