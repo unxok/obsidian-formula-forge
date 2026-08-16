@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-formula-forge",
-	"version": "1.2.1",
+	"version": "1.2.2",
 	"description": "Render bases formulas in your notes, define global formulas, API for custom functions, and more formula-related features.",
 	"main": "main.js",
 	"scripts": {
@@ -37,10 +37,7 @@
 		"vitest": "4.1.8"
 	},
 	"dependencies": {
-		"@codemirror/autocomplete": "^6.20.3",
-		"@lezer/common": "^1.5.2",
-		"@lezer/javascript": "^1.5.4",
 		"monkey-around": "3.0.0",
-		"valibot": "1.2.0"
+		"valibot": "^1.4.2"
 	}
 }
