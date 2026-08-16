@@ -12,10 +12,12 @@ import { CustomFunctions } from "~/features/custom-functions";
 import { GlobalFormulas } from "~/features/global-formulas";
 import { LiveFormulas } from "~/features/live-formulas";
 import { SearchByFormula } from "~/features/search-by-formula";
+import { Changelog } from "~/features/changelog";
 
 export class FormulaForge extends Plugin {
 	basesAdapter: BasesAdapter;
 	features: Feature[] = [
+		new Changelog(),
 		new LiveFormulas(),
 		new ExtraBuiltinFunctions(),
 		new GlobalFormulas(),
