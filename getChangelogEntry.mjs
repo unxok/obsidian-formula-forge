@@ -1,4 +1,4 @@
-import { readFileSync } from "fs";
+import { readFileSync, writeFileSync } from "fs";
 
 const version = JSON.parse(readFileSync("package.json", "utf8")).version;
 const escaped = version.replaceAll(".", "\\.");
@@ -14,4 +14,10 @@ if (!entry) {
 		`No changelog entry found for version "${version}" in changelog.md`
 	);
 }
+
+writeFileSync(
+	"src/features/changelog/current-changelog.json",
+	JSON.stringify({ entry })
+);
+
 console.log("## Changelog\n\n" + entry);

@@ -1,3 +1,3 @@
-import { FormulaForge } from "./Plugin";
+import { FormulaForge } from "~/plugin";
 
 export default FormulaForge;

@@ -25,6 +25,26 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
+## 1.2.0
+
+### New
+
+- Added the command "create-live-formula". This allows editing a formula with full autocomplete and results preview before inserting it into a note.
+- Added the command "search-files-by-formula" which is basically the built-in quick switcher but it uses a formula to filter files.
+- Added changelog popup after the plugin is updated. This can be disabled in the settings to prevent it from automatically opening. You can also run the command "show-changelog" at any time.
+- There's now a setting to control how long to wait after the last file change before refreshing live formulas.
+
+### Improvements
+
+- Formula syntax highlighting now better matches the built-in highlighting in formula properties.
+- Live formulas now have their formula text as a tooltip on hover.
+- Live formulas will now only re-render if their output changes
+- Formula editors within settings now have autocomplete suggestions.
+
+### No longer broken
+
+- Multiple live formula codeblocks now correctly highlight each block, rather than only the first.
+
 ## 1.1.2
 
 ### Improvements
