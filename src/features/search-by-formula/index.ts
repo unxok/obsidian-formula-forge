@@ -1,5 +1,6 @@
 import { Keymap, SuggestModal, TFile } from "obsidian";
 import { Feature } from "~/features/types";
+import { t } from "~/i18n";
 import { FormulaForge } from "~/plugin";
 import { FormulaForgeSettingTab } from "~/plugin/settings-tab";
 
@@ -7,19 +8,11 @@ export class SearchByFormula extends Feature {
 	setup(plugin: FormulaForge): void {
 		plugin.addCommand({
 			id: "search-files-by-formula",
-			name: "Search files by formula",
+			name: t("searchByFormula.command"),
 			callback: () => {
 				const modal = new SearchByFormulaSuggestModal(plugin);
 				modal.open();
 			},
-
-			// editorCallback: (_, ctx) => {
-			// 	const modal = new SearchByFormulaSuggestModal(
-			// 		plugin,
-			// 		ctx.file ?? undefined
-			// 	);
-			// 	modal.open();
-			// },
 		});
 	}
 
