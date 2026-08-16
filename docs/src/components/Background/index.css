@@ -1,0 +1,45 @@
+.dark .bg-dots {
+  --dot-color: var(--color-muted);
+}
+
+.bg-dots {
+  mask-image: linear-gradient(transparent 1%, var(--color-background));
+}
+
+.comets > rect {
+  animation: 2s linear animation-comet infinite;
+}
+
+@keyframes animation-comet {
+  0% {
+    transform: translate(-25%, -100%);
+    rotate: 45deg;
+    opacity: 0;
+  }
+  50% {
+    transform: translate(0%, -100%);
+    rotate: 45deg;
+    opacity: 1;
+  }
+  100% {
+    transform: translate(25%, -100%);
+    rotate: 45deg;
+    opacity: 0;
+  }
+}
+
+.maze {
+  mask-image: linear-gradient(transparent 10%, var(--color-background));
+}
+.maze line:nth-child(2n) {
+  animation: 2s linear maze-animation infinite;
+}
+
+@keyframes maze-animation {
+  from {
+    stroke: linear-gradient(to right, transparent, var(--color-yellow-500));
+  }
+  to {
+    stroke: linear-gradient(to right, var(--color-yellow-500), transparent);
+  }
+}

@@ -37,6 +37,7 @@
 		"vitest": "4.1.8"
 	},
 	"dependencies": {
+		"@codemirror/autocomplete": "^6.20.3",
 		"@lezer/common": "^1.5.2",
 		"@lezer/javascript": "^1.5.4",
 		"monkey-around": "3.0.0",

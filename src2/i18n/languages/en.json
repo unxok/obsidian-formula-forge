@@ -1,0 +1,137 @@
+{
+	"common": {
+		"delete": "Delete",
+		"edit": "Edit",
+		"save": "Save",
+		"sort": "Sort",
+		"aToZ": "A to Z",
+		"zToA": "Z to A"
+	},
+	"errors": {
+		"parsing": "Parsing error:\n{{error}}",
+		"lastParamVariadic": "Only the last parameter may be variadic.",
+		"duplicateFunctionName": "Function \"{{function}}\" already exists.",
+		"duplicateGlobalFormulaName": "Global formula \"{{formula}}\" already exists.",
+		"jsStyleVariableName": "Cannot start with a number and may only contain letters, numbers, _, and $.",
+		"notEmpty": "Cannot be empty"
+	},
+	"settings": {
+		"formulaRendering": {
+			"groupHeading": "Formula rendering",
+			"inlineCodeSyntax": {
+				"name": "Inline code syntax",
+				"desc": "The syntax to use within the start of inline code to render a formula."
+			},
+			"codeBlockLanguage": {
+				"name": "Code block language",
+				"desc": "The language name to use for a code block to render a formula."
+			},
+			"refreshTime": {
+				"name": "Refresh time",
+				"desc": "How long to wait to re-render live formulas after any metadata changes. This happens when a file is renamed, deleted, created, and modified."
+			}
+		},
+		"globalFormulas": {
+			"groupheading": "Global formulas",
+			"addTooltip": "Add formula",
+			"deleteModal": {
+				"title": "Confirm deletion",
+				"warning": "This will permanently delete the global formula named \"{{name}}\""
+			},
+			"deleteAllLabel": "Delete all",
+			"deleteAllModal": {
+				"title": "Confirm deletion",
+				"desc": "This will permanently delete all global formulas.",
+				"confirmLabel": "Delete all"
+			},
+			"editorModal": {
+				"title": "Edit global formula",
+				"name": {
+					"name": "Name",
+					"desc": "The name to use to reference this global formula."
+				},
+				"description": {
+					"name": "Description",
+					"desc": "An optional description."
+				},
+				"formula": {
+					"name": "Formula",
+					"desc": "Syntax reference",
+					"placeholder": "x + y"
+				}
+			}
+		},
+		"customFunctions": {
+			"groupheading": "Custom functions",
+			"addTooltip": "Add function",
+			"deleteModal": {
+				"title": "Confirm deletion",
+				"warning": "This will permanently delete the custom function named \"{{name}}\""
+			},
+			"copyYamlTooltip": "Copy YAML",
+			"copyYamlNotice": "Copied function as YAML",
+			"deleteAllLabel": "Delete all",
+			"deleteAllModal": {
+				"title": "Confirm deletion",
+				"desc": "This will permanently delete all custom functions.",
+				"confirmLabel": "Delete all"
+			},
+			"importLabel": "Import YAML",
+			"importModal": {
+				"title": "Import custom function as YAML"
+			},
+			"editorModal": {
+				"addTitle": "Add function",
+				"editTitle": "Edit function",
+				"name": {
+					"name": "Name",
+					"desc": "The name to use to reference this global formula."
+				},
+				"description": {
+					"name": "Description",
+					"desc": "An optional description."
+				},
+				"scope": {
+					"name": "Scope",
+					"globalDesc": "Global - call directly by name: ",
+					"typeDesc": "Type - call as a function of the specified type: "
+				},
+				"scopeType": {
+					"name": "Scope type",
+					"desc": "The data type to scope this function to. Use the implicit parameter \"self\" in the function's formula definition to refer to the value the function is being called on."
+				},
+				"parameters": {
+					"name": "Parameters",
+					"removeLabel": "Remove parameter",
+					"editLabel": "Edit parameter",
+					"editorModal": {
+						"addTitle": "Add parameter",
+						"editTitle": "Edit parameter",
+						"addTooltip": "Add parameter",
+						"name": {
+							"name": "Name",
+							"desc": "The name to refer to this parameter within this function's formula definition."
+						},
+						"type": {
+							"name": "Type",
+							"desc": "The data type of this parameter."
+						},
+						"optional": {
+							"name": "Optional",
+							"desc": "If true, the parameter is not required to be passed when calling this function and should be treated as possibly undefined in the function's formula definition."
+						},
+						"variadic": {
+							"name": "Variadic",
+							"desc": "This may only be set to true if it's the last parameter. If true, multiple values may be provided for the parameter and should be treated as a \"List\" in the function's formula definition."
+						}
+					}
+				},
+				"formula": {
+					"name": "Formula",
+					"desc": "Syntax reference",
+					"placeholder": "x + y"
+				}
+			}
+		}
+	}
+}

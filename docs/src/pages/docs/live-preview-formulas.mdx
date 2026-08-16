@@ -1,0 +1,27 @@
+---
+title: Live preview formulas
+description: Write formula syntax in your notes which displays a live preview of its output
+group: Features
+order: 0
+---
+
+Typically, formulas can **only** be used within Bases as [formula properties](https://obsidian.md/help/formulas#Create+a+formula+property) or within [filters](https://obsidian.md/help/bases/syntax#Filters). However, Formula Forge allows you to write formula syntax in your notes and see a live preview of it.
+
+The live preview of the formula will **automatically refresh** whenever any file metadata changes (rename, delete, change in properties, etc.).
+
+Live preview formulas use the **exact same syntax** as formulas uses within Bases.
+
+They also come with **syntax highlighting**, however they don't come with the autocomplete that the Bases formula property editor comes with due to technical restrictions.
+
+## Inline code
+
+<img src="/images/live-preview-formula-dark.gif" className="not-dark:hidden" />
+<img src="/images/live-preview-formula-light.gif" className="dark:hidden" />
+
+The first way to create a live preview formula is with inline code.
+
+Simply start the inline code with an equals sign (`=`) and start typing your formula. You can change the starting syntax from an equals sign to something else in the plugin settings.
+
+The output is rendered such that its width fits to the output, making it useful for situations where you want to intermingle Markdown and LP formulas. For example:
+
+## Code block

@@ -94,7 +94,7 @@ FF provides a few extra utility functions you can use in your formulas. More may
 
 - Defines a local variable.
 - Typically used in conjunction with `then()`.
-- Example: `define(who, "world").then("Hello " + who + "!")` returns `"Hello world!"`.
+- Example: `define("who", "world").then("Hello " + who + "!")` returns `"Hello world!"`.
 - It is also a function of the `Null` type, so it can be chained to define multiple variables.
 - Example: `define("num1", 6).define("num2", 7).then(num1 + num2)` returns `13`.
 
@@ -106,7 +106,7 @@ FF provides a few extra utility functions you can use in your formulas. More may
 - Typically used in conjunction with `define()`.
 - Example: `then(define("foo", "bar"), "this string is ignored", foo)` returns `"bar"`.
 - It is also a function of the `Null` type, which is useful to chain on a `define()` call.
-- Example: `define(who, "world").then("Hello " + who + "!")` returns `"Hello world!"`.
+- Example: `define("who", "world").then("Hello " + who + "!")` returns `"Hello world!"`.
 
 ### `stableRandom()`
 

@@ -25,6 +25,23 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
+## 1.2.0
+
+### New
+
+- Added the command "create-live-formula". This allows editing a formula with full autocomplete and results preview before inserting it into a note.
+
+### Improvements
+
+- Formula syntax highlighting now better matches the built-in highlighting in formula properties.
+- Live formulas now have their formula text as a tooltip on hover.
+- Live formulas will now only re-render if their output changes
+- Formula editors within settings now have autocomplete suggestions.
+
+### No longer broken
+
+- Multiple live formula codeblocks now correctly highlight each block, rather than only the first.
+
 ## 1.1.2
 
 ### Improvements
