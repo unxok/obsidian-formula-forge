@@ -25,6 +25,13 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
+## 1.2.1
+
+### Other
+
+- Removed unused CSS that was only for testing purposes
+- Removed the "show changelog" feature (which was added in the last release) because I realized it's not that useful when I will often have to do tiny releases (like this very one) which drowns out actually useful changelog entries ¯\\(ツ)/¯.
+
 ## 1.2.0
 
 ### New
