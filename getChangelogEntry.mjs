@@ -15,9 +15,4 @@ if (!entry) {
 	);
 }
 
-writeFileSync(
-	"src/features/changelog/current-changelog.json",
-	JSON.stringify({ entry })
-);
-
 console.log("## Changelog\n\n" + entry);
