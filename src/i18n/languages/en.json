@@ -14,7 +14,9 @@
 		"duplicateFunctionName": "Function \"{{function}}\" already exists.",
 		"duplicateGlobalFormulaName": "Global formula \"{{formula}}\" already exists.",
 		"jsStyleVariableName": "Cannot start with a number and may only contain letters, numbers, _, and $.",
-		"notEmpty": "Cannot be empty"
+		"notEmpty": "Cannot be empty",
+		"invalidFunction": "Cannot find function \"{{ function }}\"",
+		"invalidInstanceFunction": "Cannot find function \"{{ function }}\" on type {{ type }}"
 	},
 	"settings": {
 		"changelog": {

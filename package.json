@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-formula-forge",
-	"version": "1.2.0",
+	"version": "1.2.1",
 	"description": "Render bases formulas in your notes, define global formulas, API for custom functions, and more formula-related features.",
 	"main": "main.js",
 	"scripts": {
@@ -24,7 +24,7 @@
 		"@types/node": "22.12.0",
 		"esbuild": "0.25.5",
 		"eslint": "9.39.2",
-		"eslint-plugin-obsidianmd": "^0.1.9",
+		"eslint-plugin-obsidianmd": "^0.4.1",
 		"luxon": "3.5.0",
 		"obsidian": "1.12.3",
 		"obsidian-typings": "6.13.0",

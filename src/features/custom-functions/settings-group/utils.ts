@@ -1,6 +1,5 @@
 import { ErrorValue } from "obsidian";
 import { t } from "~/i18n";
-import { obsidianText } from "~/i18n/obsidian";
 import { FormulaForge } from "~/plugin";
 import { FormulaForgeSettings } from "~/plugin/schema";
 import { TryCatchResult } from "~/shared/utils";
@@ -65,11 +64,7 @@ export const validateDuplicateFunctionName = (
 	const { message } = result as ErrorValue;
 
 	// function not found, so it is valid
-	if (
-		isGlobal &&
-		message ===
-			obsidianText("formulas.msg-error-invalid-function", { function: name })
-	) {
+	if (isGlobal && message === t("errors.invalidFunction", { function: name })) {
 		return {
 			success: true,
 			data: undefined,
@@ -81,7 +76,7 @@ export const validateDuplicateFunctionName = (
 	if (
 		!isGlobal &&
 		message ===
-			obsidianText("formulas.msg-error-invalid-instance-function", {
+			t("errors.invalidInstanceFunction", {
 				function: name,
 				type: scopeType,
 			})
