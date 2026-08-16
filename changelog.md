@@ -25,6 +25,12 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
+## 1.2.3
+
+### No longer broken
+
+- Global formulas now work correctly in live formulas
+
 ## 1.2.2
 
 ### Other

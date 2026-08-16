@@ -1,4 +1,5 @@
 import { around, dedupe } from "monkey-around";
+import { BasesContext } from "obsidian-typings";
 import { GlobalFormulasSettingGroup } from "~/features/global-formulas/settings-group";
 import { Feature } from "~/features/types";
 import { FormulaForge } from "~/plugin";
@@ -52,7 +53,7 @@ export class GlobalFormulas extends Feature {
 						])
 					);
 
-					return ctx;
+					return ctx.regenerateLocal() as BasesContext;
 				});
 			},
 		});
