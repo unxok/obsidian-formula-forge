@@ -1,0 +1,7 @@
+.formula-forge--formula-md-rendered {
+	display: inline-block;
+	p {
+		margin: 0;
+		display: inline-block;
+	}
+}
