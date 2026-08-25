@@ -25,6 +25,12 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
+## 1.2.4
+
+### No longer broken
+
+- Fixed regression causing `md()` to render incorrectly in bases list view.
+
 ## 1.2.3
 
 ### No longer broken
