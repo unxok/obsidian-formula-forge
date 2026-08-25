@@ -6,6 +6,8 @@ import {
 } from "obsidian";
 import { FormulaForge } from "~/plugin";
 
+import "./md.css";
+
 export const md = (plugin: FormulaForge) => {
 	plugin.registerGlobalFunc({
 		name: "md",
