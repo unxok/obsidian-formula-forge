@@ -208,7 +208,19 @@ export class BasesAdapter extends Component {
 					filters: { and: [formula] },
 			  })
 			: "";
-		const query = this.getQueryPrototype().constructor.fromString(queryString);
+
+		// `fromString()` is actually a static method, but because it's a class, I can't override the interface type definition
+		// to include it since interfaces can't have static methods. If I were declare the below on the actual interface,
+		// it would cause type issues with monkey patches applied elsewhere
+		interface IBasesQuery extends BasesQuery {
+			constructor: {
+				fromString(queryString: string): BasesQuery;
+			};
+		}
+
+		const query = (
+			this.getQueryPrototype() as IBasesQuery
+		).constructor.fromString(queryString);
 
 		controller.setQuery(query);
 		controller.runQuery(controller.ctx);

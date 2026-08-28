@@ -194,12 +194,7 @@ declare module "obsidian-typings" {
 	}
 
 	interface BasesQuery {
-		toString(): string;
 		filters: BasesFilter | null;
-
-		constructor: {
-			fromString(queryString: string): BasesQuery;
-		};
 	}
 
 	class BasesContext {
