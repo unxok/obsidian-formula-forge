@@ -25,6 +25,16 @@ release. Some specific details may be omitted for brevity.
 
 -->
 
+## 1.3.0
+
+### New
+
+- Added option to control what modes live formula tooltips are enabled.
+
+### No longer broken
+
+- Fixed problem with newly created formulas remaining in the base's YAML config despite being renamed.
+
 ## 1.2.4
 
 ### No longer broken
@@ -35,20 +45,20 @@ release. Some specific details may be omitted for brevity.
 
 ### No longer broken
 
-- Global formulas now work correctly in live formulas
+- Global formulas now work correctly in live formulas.
 
 ## 1.2.2
 
 ### Other
 
-- Updated valibot (dependency)
-- Removed unused dependencies
+- Updated valibot (dependency).
+- Removed unused dependencies.
 
 ## 1.2.1
 
 ### Other
 
-- Removed unused CSS that was only for testing purposes
+- Removed unused CSS that was only for testing purposes.
 - Removed the "show changelog" feature (which was added in the last release) because I realized it's not that useful when I will often have to do tiny releases (like this very one) which drowns out actually useful changelog entries ¯\\(ツ)/¯.
 
 ## 1.2.0
