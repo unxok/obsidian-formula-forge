@@ -13,9 +13,13 @@ export class LiveFormulas extends Feature {
 	}
 
 	settings(plugin: FormulaForge, tab: FormulaForgeSettingTab): void {
-		const { inlineCodeSyntax, codeBlockLanguage, refreshTime } =
+		const { inlineCodeSyntax, codeBlockLanguage, refreshTime, tooltips } =
 			plugin.getSettings();
 		const group = new SettingGroup(tab.containerEl);
+		group.addExtraButton((button) => {
+			button.setIcon("lucide-info");
+			button.setTooltip(t("settings.formulaRendering.tooltip"));
+		});
 		group.setHeading(t("settings.formulaRendering.groupHeading"));
 		group.addSetting((s) => {
 			s.setName(t("settings.formulaRendering.inlineCodeSyntax.name"));
@@ -54,6 +58,27 @@ export class LiveFormulas extends Feature {
 					await plugin.updateSettings((prev) => ({
 						...prev,
 						refreshTime: Math.max(0, Number(v)),
+					}));
+				});
+			});
+		});
+		group.addSetting((s) => {
+			s.setName(t("settings.formulaRendering.tooltips.name"));
+			s.setDesc(t("settings.formulaRendering.tooltips.desc"));
+			s.addDropdown((dropdown) => {
+				dropdown.addOptions({
+					"always": t("settings.formulaRendering.tooltips.options.always"),
+					"live-preview": t(
+						"settings.formulaRendering.tooltips.options.live-preview"
+					),
+					"reading": t("settings.formulaRendering.tooltips.options.reading"),
+					"never": t("settings.formulaRendering.tooltips.options.never"),
+				} satisfies Record<typeof tooltips, string>);
+				dropdown.setValue(tooltips.toString());
+				dropdown.onChange(async (v) => {
+					await plugin.updateSettings((prev) => ({
+						...prev,
+						tooltips: v as typeof tooltips,
 					}));
 				});
 			});

@@ -76,7 +76,7 @@ export class GlobalFormulas extends Feature {
 					const built = old.call(that, ctx);
 					const { globalFormulas } = plugin.getSettings();
 
-					if (!globalFormulas || that.query instanceof Error) {
+					if (!globalFormulas.length || that.query instanceof Error) {
 						return old.call(that, ctx);
 					}
 					if (!that.query) {
@@ -97,7 +97,6 @@ export class GlobalFormulas extends Feature {
 
 					that.query.formulas = formulas;
 					built.formulas = { ...formulas };
-
 					return built;
 				}),
 		});
@@ -111,34 +110,27 @@ export class GlobalFormulas extends Feature {
 	patchQuery(plugin: FormulaForge): void {
 		const queryPrototype = plugin.basesAdapter.getQueryPrototype();
 
-		const uninstallQueryPatch = around(
-			queryPrototype,
-			// @ts-expect-error
-			// TODO I think TS is matching toString to the builtin method on an object but it doesn't always happen so idk
-			{
-				toString(old) {
-					return dedupe(monkeyAroundKey, old, function () {
-						// @ts-expect-error
-						const that = this as typeof queryPrototype;
-						const { globalFormulas } = plugin.getSettings();
-						const copy = { ...that.formulas };
-
-						// temporarily delete global formulas
-						globalFormulas.forEach(({ name }) => {
-							delete that.formulas[name];
-						});
-
-						// query is stringified (while global formulas are removed)
-						const str = old.call(that);
-
-						// afterwards reset formulas back to original state
-						that.formulas = copy;
-
-						return str;
+		const uninstallQueryPatch = around(queryPrototype, {
+			getSerializable(old) {
+				return dedupe(monkeyAroundKey, old, function () {
+					// @ts-expect-error
+					const that = this as typeof queryPrototype;
+					const { globalFormulas } = plugin.getSettings();
+					if (!globalFormulas.length) {
+						return old.call(that);
+					}
+					const obj = old.call(that) as {
+						formulas?: Record<string, string>;
+					};
+					const { formulas } = obj;
+					if (!formulas) return obj;
+					globalFormulas.forEach(({ name }) => {
+						delete formulas[name];
 					});
-				},
-			}
-		);
+					return obj;
+				});
+			},
+		});
 
 		plugin.register(uninstallQueryPatch);
 	}
