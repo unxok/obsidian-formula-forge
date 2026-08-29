@@ -46,11 +46,34 @@ export class FormulaRenderer {
 	output: Value = NullValue.value;
 
 	render(): void {
-		const { manager, formula, containingFile, formulaContainerEl } = this;
+		const {
+			manager,
+			formula,
+			containingFile,
+			formulaContainerEl,
+			containerEl,
+		} = this;
 		const { plugin } = manager;
 
 		const formulaInstance = plugin.basesAdapter.createFormula(formula);
-		setTooltip(formulaContainerEl, formula);
+
+		const handleTooltip = () => {
+			const { tooltips } = plugin.settings;
+			if (tooltips === "never") return;
+			if (
+				tooltips === "always" ||
+				(tooltips === "live-preview" &&
+					containerEl.matches(".is-live-preview &")) ||
+				(tooltips === "reading" &&
+					containerEl.matches(".markdown-reading-view &"))
+			) {
+				setTooltip(formulaContainerEl, formula);
+			}
+		};
+
+		containerEl.isConnected
+			? handleTooltip()
+			: containerEl.onNodeInserted(() => handleTooltip(), true);
 
 		if (formulaInstance.formula.type === "invalid") {
 			this.displayError(formulaInstance.formula.getErrorMessage());

@@ -25,6 +25,15 @@ export const formulaForgeSettingsSchema = vOptionalObjectWithDefault({
 	inlineCodeSyntax: v.optional(v.string(), "="),
 	codeBlockLanguage: v.optional(v.string(), "base-formula"),
 	refreshTime: v.optional(v.number(), 500),
+	tooltips: v.optional(
+		v.union([
+			v.literal("always"),
+			v.literal("live-preview"),
+			v.literal("reading"),
+			v.literal("never"),
+		]),
+		"always"
+	),
 
 	// global-formulas
 	globalFormulas: v.optional(

@@ -27,6 +27,7 @@
 		},
 		"formulaRendering": {
 			"groupHeading": "Formula rendering",
+			"tooltip": "Changes to these settings may require the app to be restarted to take full effect.",
 			"inlineCodeSyntax": {
 				"name": "Inline code syntax",
 				"desc": "The syntax to use within the start of inline code to render a formula."
@@ -38,6 +39,16 @@
 			"refreshTime": {
 				"name": "Refresh time",
 				"desc": "How long to wait to re-render live formulas after any metadata changes. This happens when a file is renamed, deleted, created, and modified."
+			},
+			"tooltips": {
+				"name": "Show tooltip",
+				"desc": "What modes to show the tooltip containing the raw formula when hovering over the rendered output.",
+				"options": {
+					"always": "Always",
+					"live-preview": "Live preview",
+					"reading": "Reading",
+					"never": "Never"
+				}
 			}
 		},
 		"globalFormulas": {

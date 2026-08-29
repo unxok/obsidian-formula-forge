@@ -53,10 +53,7 @@ export class FormulaForge extends Plugin {
 	/**
 	 * The plugin settings
 	 */
-	private settings: FormulaForgeSettings = v.parse(
-		formulaForgeSettingsSchema,
-		{}
-	);
+	settings: FormulaForgeSettings = v.parse(formulaForgeSettingsSchema, {});
 
 	/**
 	 * Read and parse the plugin settings from disk
